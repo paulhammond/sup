@@ -1,0 +1,6 @@
+sup config.hcl
+stdout '\.'
+! stderr .
+
+-- config.hcl --
+source = "."
