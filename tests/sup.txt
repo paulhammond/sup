@@ -1,0 +1,4 @@
+# hello world
+sup
+stdout 'sup\n'
+! stderr .

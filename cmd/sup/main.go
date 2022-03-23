@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"os"
+
+	"github.com/paulhammond/sup/internal/cmd"
+)
 
 func main() {
-	fmt.Println("sup")
+	os.Exit(cmd.Run())
 }
