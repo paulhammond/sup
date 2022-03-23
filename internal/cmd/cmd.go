@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/paulhammond/sup/internal/cfg"
+	"github.com/paulhammond/sup/internal/object"
 	_ "github.com/rogpeppe/go-internal/testscript"
 	"github.com/spf13/pflag"
 )
@@ -27,7 +28,15 @@ func Run() int {
 		return printError(err)
 	}
 
-	fmt.Println(cfg.SourceClean())
+	set, err := object.FS(os.DirFS(cfg.SourceClean()))
+	if err != nil {
+		return printError(err)
+	}
+
+	for _, path := range set.Paths() {
+		fmt.Println(path)
+	}
+
 	return 0
 }
 

@@ -1,6 +1,14 @@
 sup config.hcl
-stdout '\.'
+cmp stdout output.txt
 ! stderr .
 
 -- config.hcl --
-source = "."
+source = "src"
+
+-- output.txt --
+a.txt
+b.txt
+-- src/a.txt --
+a
+-- src/b.txt --
+b
