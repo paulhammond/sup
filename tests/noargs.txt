@@ -1,4 +1,0 @@
-# hello world
-! sup
-! stdout .
-stderr 'usage: sup'

@@ -1,0 +1,20 @@
+# prep a remote
+prep remote.db
+
+# no args
+! sup
+! stdout .
+stderr 'usage: sup'
+
+# no config file
+! sup notfound.hcl remote.db
+! stdout .
+stderr 'error: <nil>: Configuration file not found' # tktk make less verbose
+
+# no remote
+! sup config.hcl notfound.db
+! stdout .
+stderr 'fake remote not initialized'
+
+-- config.hcl --
+source = "src"

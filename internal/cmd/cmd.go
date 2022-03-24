@@ -6,6 +6,7 @@ import (
 
 	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/object"
+	"github.com/paulhammond/sup/internal/remote"
 	_ "github.com/rogpeppe/go-internal/testscript"
 	"github.com/spf13/pflag"
 )
@@ -19,7 +20,7 @@ func Run() int {
 	}
 
 	args := cmd.Args()
-	if len(args) != 1 {
+	if len(args) != 2 {
 		return printUsage()
 	}
 
@@ -28,12 +29,33 @@ func Run() int {
 		return printError(err)
 	}
 
+	r, err := remote.Open(args[1])
+	if err != nil {
+		return printError(err)
+	}
+	defer func() {
+		err := r.Close()
+		if err != nil {
+			printError(err)
+		}
+	}()
+
 	set, err := object.FS(os.DirFS(cfg.SourceClean()))
 	if err != nil {
 		return printError(err)
 	}
 
+	fmt.Println("local files:")
 	for _, path := range set.Paths() {
+		fmt.Println(path)
+	}
+
+	remoteSet, err := r.Set()
+	if err != nil {
+		return printError(err)
+	}
+	fmt.Println("remote files:")
+	for _, path := range remoteSet.Paths() {
 		fmt.Println(path)
 	}
 

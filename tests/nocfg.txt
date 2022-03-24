@@ -1,4 +1,0 @@
-# hello world
-! sup notfound.hcl
-! stdout .
-stderr 'error: <nil>: Configuration file not found' # tktk make less verbose

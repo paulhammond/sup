@@ -1,4 +1,5 @@
-sup config.hcl
+prep remote.db
+sup config.hcl remote.db
 cmp stdout output.txt
 ! stderr .
 
@@ -6,8 +7,11 @@ cmp stdout output.txt
 source = "src"
 
 -- output.txt --
+local files:
 a.txt
 b.txt
+remote files:
+a.txt
 -- src/a.txt --
 a
 -- src/b.txt --
