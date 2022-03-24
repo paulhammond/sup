@@ -17,6 +17,20 @@ func TestSetPaths(t *testing.T) {
 	if !(reflect.DeepEqual(actual, expected)) {
 		t.Errorf("Wrong Paths:\ngot %#v\nexp %#v", actual, expected)
 	}
+}
+
+func TestFileHash(t *testing.T) {
+	set, err := object.FS(os.DirFS("../../testdata"))
+	ok(t, err, "New")
+
+	obj := (*set)["a.txt"]
+
+	hash, err := obj.Hash()
+	ok(t, err, "Hash")
+
+	if exp := "10cc175b9c0f1b6a831c399e269772661"; hash != exp {
+		t.Errorf("Wrong MD5:\ngot %q\nexp %q", hash, exp)
+	}
 
 }
 

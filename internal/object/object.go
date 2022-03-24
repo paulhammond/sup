@@ -1,7 +1,6 @@
 package object
 
 import (
-	"io/fs"
 	"sort"
 )
 
@@ -21,32 +20,5 @@ func (s Set) Paths() []string {
 }
 
 type Object interface {
-}
-
-type File struct {
-	path string
-	fs   *fs.FS
-}
-
-func FS(filesystem fs.FS) (*Set, error) {
-	set := Set{}
-
-	err := fs.WalkDir(filesystem, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if d.IsDir() {
-			return nil
-		}
-
-		set[path] = &File{
-			path: path,
-			fs:   &filesystem,
-		}
-
-		return nil
-	})
-
-	return &set, err
+	Hash() (string, error)
 }

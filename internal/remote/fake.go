@@ -1,7 +1,9 @@
 package remote
 
 import (
+	"crypto/md5"
 	"errors"
+	"fmt"
 
 	"github.com/paulhammond/sup/internal/object"
 	"go.etcd.io/bbolt"
@@ -55,6 +57,15 @@ func (o fakeObject) get() ([]byte, error) {
 	return value, err
 }
 
+func (o fakeObject) Hash() (string, error) {
+	v, err := o.get()
+	if err != nil {
+		return "", err
+	}
+	h := md5.Sum(v)
+	return fmt.Sprintf("%d%x", len(v), h[:]), nil
+}
+
 func openFake(path string) (Remote, error) {
 	db, err := bbolt.Open(path, 0600, nil)
 	if err != nil {
@@ -90,6 +101,8 @@ func CreateFake(path string) error {
 		}
 		return b.Put([]byte("a.txt"), []byte("42"))
 	})
+
+	db.Close()
 
 	return err
 }
