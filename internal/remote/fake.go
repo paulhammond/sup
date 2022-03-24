@@ -99,7 +99,21 @@ func CreateFake(path string) error {
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte("a.txt"), []byte("42"))
+		err = b.Put([]byte("a.txt"), []byte("42"))
+		if err != nil {
+			return err
+		}
+		err = b.Put([]byte("b.txt"), []byte("b\n"))
+		if err != nil {
+			return err
+		}
+		err = b.Put([]byte("d.txt"), []byte("d\n"))
+		if err != nil {
+			return err
+		}
+
+		return nil
+
 	})
 
 	db.Close()

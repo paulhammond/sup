@@ -59,6 +59,19 @@ func Run() int {
 		fmt.Println(path)
 	}
 
+	toUpload, toDelete, err := remoteSet.Diff(set)
+	if err != nil {
+		return printError(err)
+	}
+	fmt.Println("upload:")
+	for _, path := range toUpload {
+		fmt.Println(path)
+	}
+	fmt.Println("delete:")
+	for _, path := range toDelete {
+		fmt.Println(path)
+	}
+
 	return 0
 }
 

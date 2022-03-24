@@ -10,9 +10,19 @@ source = "src"
 local files:
 a.txt
 b.txt
+c.txt
 remote files:
 a.txt
+b.txt
+d.txt
+upload:
+a.txt
+c.txt
+delete:
+d.txt
 -- src/a.txt --
 a
 -- src/b.txt --
 b
+-- src/c.txt --
+c
