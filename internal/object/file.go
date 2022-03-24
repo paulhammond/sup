@@ -32,7 +32,7 @@ func (f File) Hash() (string, error) {
 	return fmt.Sprintf("%d%x", size, h.Sum(nil)), nil
 }
 
-func FS(filesystem fs.FS) (*Set, error) {
+func FS(filesystem fs.FS) (Set, error) {
 	set := Set{}
 
 	err := fs.WalkDir(filesystem, ".", func(path string, d fs.DirEntry, err error) error {
@@ -52,5 +52,5 @@ func FS(filesystem fs.FS) (*Set, error) {
 		return nil
 	})
 
-	return &set, err
+	return set, err
 }

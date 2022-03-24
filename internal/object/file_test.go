@@ -23,7 +23,7 @@ func TestFileHash(t *testing.T) {
 	set, err := object.FS(os.DirFS("../../testdata"))
 	ok(t, err, "New")
 
-	obj := (*set)["a.txt"]
+	obj := set["a.txt"]
 
 	hash, err := obj.Hash()
 	ok(t, err, "Hash")
