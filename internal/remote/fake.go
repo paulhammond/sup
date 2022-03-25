@@ -111,8 +111,12 @@ func openFake(path string) (Remote, error) {
 		return nil, err
 	}
 
-	err = db.Update(func(tx *bbolt.Tx) error {
+	err = db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("values"))
+		if b == nil {
+			return errors.New("fake remote not initialized")
+		}
+		b = tx.Bucket([]byte("metadata"))
 		if b == nil {
 			return errors.New("fake remote not initialized")
 		}
