@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/paulhammond/sup/internal/cfg"
+	"github.com/paulhammond/sup/internal/filter"
 	"github.com/paulhammond/sup/internal/object"
 	"github.com/paulhammond/sup/internal/remote"
 	_ "github.com/rogpeppe/go-internal/testscript"
@@ -49,6 +50,13 @@ func Run() int {
 	for _, path := range set.Paths() {
 		fmt.Println(path)
 	}
+
+	fmt.Println("applying filters:")
+	err = filter.Filter(&set)
+	if err != nil {
+		return printError(err)
+	}
+	fmt.Println("done")
 
 	remoteSet, err := r.Set()
 	if err != nil {

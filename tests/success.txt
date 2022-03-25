@@ -19,6 +19,8 @@ local files:
 a.txt
 b.txt
 c.txt
+applying filters:
+done
 remote files:
 a.txt
 b.txt
@@ -35,6 +37,8 @@ local files:
 a.txt
 b.txt
 c.txt
+applying filters:
+done
 remote files:
 a.txt
 b.txt
