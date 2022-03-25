@@ -64,11 +64,11 @@ func Run() int {
 		return printError(err)
 	}
 	fmt.Println("upload:")
-	for _, path := range toUpload {
+	for _, path := range toUpload.Paths() {
 		fmt.Println(path)
 	}
 	fmt.Println("delete:")
-	for _, path := range toDelete {
+	for _, path := range toDelete.Paths() {
 		fmt.Println(path)
 	}
 

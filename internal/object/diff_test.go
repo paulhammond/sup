@@ -49,12 +49,12 @@ func TestDiffBasic(t *testing.T) {
 	ok(t, err, "Diff")
 
 	expectedUploads := []string{"added", "addederr", "diff"}
-	if !reflect.DeepEqual(expectedUploads, toUpload) {
+	if !reflect.DeepEqual(expectedUploads, toUpload.Paths()) {
 		t.Fatalf("uploads wrong\ngot: %#v\nexp: %#v", toUpload, expectedUploads)
 	}
 
 	expectedDeletes := []string{"extra", "extraerr"}
-	if !reflect.DeepEqual(expectedDeletes, toDelete) {
+	if !reflect.DeepEqual(expectedDeletes, toDelete.Paths()) {
 		t.Fatalf("deletes wrong\ngot: %#v\nexp: %#v", toDelete, expectedDeletes)
 	}
 
@@ -71,10 +71,10 @@ func TestDiffMatch(t *testing.T) {
 	toUpload, toDelete, err := set.Diff(set)
 	ok(t, err, "Diff")
 
-	if exp := []string{}; !reflect.DeepEqual(exp, toUpload) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toUpload.Paths()) {
 		t.Errorf("uploads wrong\ngot: %#v\nexp: %#v", toUpload, exp)
 	}
-	if exp := []string{}; !reflect.DeepEqual(exp, toDelete) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toDelete.Paths()) {
 		t.Errorf("deletes wrong\ngot: %#v\nexp: %#v", toDelete, exp)
 	}
 
@@ -95,10 +95,10 @@ func TestDiffError(t *testing.T) {
 	if err != HashErr {
 		t.Errorf("err wrong\ngot: %$v\nexp: %#v", err, HashErr)
 	}
-	if exp := []string{}; !reflect.DeepEqual(exp, toUpload) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toUpload.Paths()) {
 		t.Errorf("uploads wrong\ngot: %#v\nexp: %#v", toUpload, exp)
 	}
-	if exp := []string{}; !reflect.DeepEqual(exp, toDelete) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toDelete.Paths()) {
 		t.Errorf("deletes wrong\ngot: %#v\nexp: %#v", toDelete, exp)
 	}
 
@@ -107,10 +107,10 @@ func TestDiffError(t *testing.T) {
 		t.Errorf("err wrong\ngot: %$v\nexp: %#v", err, HashErr)
 	}
 
-	if exp := []string{}; !reflect.DeepEqual(exp, toUpload) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toUpload.Paths()) {
 		t.Errorf("uploads wrong\ngot: %#v\nexp: %#v", toUpload, exp)
 	}
-	if exp := []string{}; !reflect.DeepEqual(exp, toDelete) {
+	if exp := []string{}; !reflect.DeepEqual(exp, toDelete.Paths()) {
 		t.Errorf("deletes wrong\ngot: %#v\nexp: %#v", toDelete, exp)
 	}
 

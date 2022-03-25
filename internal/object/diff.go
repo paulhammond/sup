@@ -1,19 +1,17 @@
 package object
 
-import "sort"
-
-func (s Set) Diff(new Set) ([]string, []string, error) {
+func (s Set) Diff(new Set) (Set, Set, error) {
 
 	old := s // go likes all method recievers to have the same name
 	// alternatively you could think of old as remote and new as local
 
-	toDelete := make([]string, 0, len(old))
-	toUpload := make([]string, 0, len(new))
+	toDelete := make(Set, len(old))
+	toUpload := make(Set, len(new))
 
 	// start by checking all existing files to see if they should be deleted
-	for k := range old {
+	for k, o := range old {
 		if _, ok := new[k]; !ok {
-			toDelete = append(toDelete, k)
+			toDelete[k] = o
 		}
 	}
 
@@ -21,26 +19,23 @@ func (s Set) Diff(new Set) ([]string, []string, error) {
 	for k, f2 := range new {
 		f1, ok := old[k]
 		if !ok {
-			toUpload = append(toUpload, k)
+			toUpload[k] = f2
 			continue
 		}
 
 		h1, err := f1.Hash()
 		if err != nil {
-			return []string{}, []string{}, err
+			return Set{}, Set{}, err
 		}
 		h2, err := f2.Hash()
 		if err != nil {
-			return []string{}, []string{}, err
+			return Set{}, Set{}, err
 		}
 
 		if h1 != h2 {
-			toUpload = append(toUpload, k)
+			toUpload[k] = f2
 		}
 	}
-
-	sort.Strings(toUpload)
-	sort.Strings(toDelete)
 
 	return toUpload, toDelete, nil
 }
