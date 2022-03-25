@@ -14,9 +14,23 @@ type File struct {
 }
 
 func (f File) Hash() (string, error) {
+	var s string
+	err := f.Open(func(r io.Reader) error {
+		h := md5.New()
+		size, err := io.Copy(h, r)
+		if err != nil {
+			return err
+		}
+		s = fmt.Sprintf("%d%x", size, h.Sum(nil))
+		return nil
+	})
+	return s, err
+}
+
+func (f File) Open(fnc func(io.Reader) error) error {
 	fd, err := f.fs.Open(f.path)
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer func() {
 		e := fd.Close()
@@ -25,12 +39,7 @@ func (f File) Hash() (string, error) {
 		}
 	}()
 
-	h := md5.New()
-	var size int64
-	if size, err = io.Copy(h, fd); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%d%x", size, h.Sum(nil)), nil
+	return fnc(fd)
 }
 
 func (f File) Metadata() (*Metadata, error) {

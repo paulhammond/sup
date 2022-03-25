@@ -1,6 +1,7 @@
 package object
 
 import (
+	"io"
 	"sort"
 )
 
@@ -22,6 +23,7 @@ func (s Set) Paths() []string {
 type Object interface {
 	Hash() (string, error)
 	Metadata() (*Metadata, error)
+	Open(func(io.Reader) error) error
 }
 
 type Metadata struct {

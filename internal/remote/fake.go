@@ -1,9 +1,11 @@
 package remote
 
 import (
+	"bytes"
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/paulhammond/sup/internal/object"
 	"go.etcd.io/bbolt"
@@ -92,6 +94,15 @@ func (o fakeObject) Metadata() (*object.Metadata, error) {
 		ContentType: o.getMetadataValue("contenttype"),
 	}
 	return &metadata, nil
+}
+
+func (o fakeObject) Open(fnc func(io.Reader) error) error {
+	val, err := o.get()
+	if err != nil {
+		return err
+	}
+	r := bytes.NewReader(val)
+	return fnc(r)
 }
 
 func openFake(path string) (Remote, error) {

@@ -2,6 +2,7 @@ package object_test
 
 import (
 	"errors"
+	"io"
 	"reflect"
 	"testing"
 
@@ -21,6 +22,10 @@ func (o testObject) Hash() (string, error) {
 
 func (o testObject) Metadata() (*object.Metadata, error) {
 	return nil, errors.New("not implemented")
+}
+
+func (o testObject) Open(func(io.Reader) error) error {
+	return errors.New("not implemented")
 }
 
 func TestDiffBasic(t *testing.T) {
