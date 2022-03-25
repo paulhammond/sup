@@ -57,6 +57,27 @@ func (o fakeObject) get() ([]byte, error) {
 	return value, err
 }
 
+func (o fakeObject) getMetadataValue(key string) *string {
+	var value *string
+	err := o.db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("metadata"))
+		v := b.Get([]byte(o.path + ":" + key))
+		if v == nil {
+			value = nil
+			return nil
+		}
+		tmp := make([]byte, len(v))
+		copy(tmp, v)
+		tmp2 := string(tmp)
+		value = &tmp2
+		return nil
+	})
+	if err != nil {
+		panic("impossible error")
+	}
+	return value
+}
+
 func (o fakeObject) Hash() (string, error) {
 	v, err := o.get()
 	if err != nil {
@@ -64,6 +85,13 @@ func (o fakeObject) Hash() (string, error) {
 	}
 	h := md5.Sum(v)
 	return fmt.Sprintf("%d%x", len(v), h[:]), nil
+}
+
+func (o fakeObject) Metadata() (*object.Metadata, error) {
+	metadata := object.Metadata{
+		ContentType: o.getMetadataValue("contenttype"),
+	}
+	return &metadata, nil
 }
 
 func openFake(path string) (Remote, error) {
@@ -90,24 +118,44 @@ func CreateFake(path string) error {
 	}
 
 	err = db.Update(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("values"))
+		valueBucket := tx.Bucket([]byte("values"))
 		var err error
-		if b != nil {
+		if valueBucket != nil {
 			return errors.New("fake remote already initialized")
 		}
-		b, err = tx.CreateBucket([]byte("values"))
+		metadataBucket := tx.Bucket([]byte("metadata"))
+		if metadataBucket != nil {
+			return errors.New("fake remote already initialized")
+		}
+		valueBucket, err = tx.CreateBucket([]byte("values"))
 		if err != nil {
 			return err
 		}
-		err = b.Put([]byte("a.txt"), []byte("42"))
+		metadataBucket, err = tx.CreateBucket([]byte("metadata"))
 		if err != nil {
 			return err
 		}
-		err = b.Put([]byte("b.txt"), []byte("b\n"))
+		err = valueBucket.Put([]byte("a.txt"), []byte("42"))
 		if err != nil {
 			return err
 		}
-		err = b.Put([]byte("d.txt"), []byte("d\n"))
+		err = metadataBucket.Put([]byte("a.txt:contenttype"), []byte("text/plain"))
+		if err != nil {
+			return err
+		}
+		err = valueBucket.Put([]byte("b.txt"), []byte("b\n"))
+		if err != nil {
+			return err
+		}
+		err = metadataBucket.Put([]byte("b.txt:contenttype"), []byte("text/plain"))
+		if err != nil {
+			return err
+		}
+		err = valueBucket.Put([]byte("d.txt"), []byte("d\n"))
+		if err != nil {
+			return err
+		}
+		err = metadataBucket.Put([]byte("d.txt:contenttype"), []byte("text/plain"))
 		if err != nil {
 			return err
 		}

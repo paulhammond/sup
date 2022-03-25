@@ -21,4 +21,9 @@ func (s Set) Paths() []string {
 
 type Object interface {
 	Hash() (string, error)
+	Metadata() (*Metadata, error)
+}
+
+type Metadata struct {
+	ContentType *string
 }

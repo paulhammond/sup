@@ -8,8 +8,9 @@ import (
 )
 
 type File struct {
-	path string
-	fs   fs.FS
+	path     string
+	fs       fs.FS
+	metadata *Metadata
 }
 
 func (f File) Hash() (string, error) {
@@ -32,6 +33,10 @@ func (f File) Hash() (string, error) {
 	return fmt.Sprintf("%d%x", size, h.Sum(nil)), nil
 }
 
+func (f File) Metadata() (*Metadata, error) {
+	return f.metadata, nil
+}
+
 func FS(filesystem fs.FS) (Set, error) {
 	set := Set{}
 
@@ -45,8 +50,9 @@ func FS(filesystem fs.FS) (Set, error) {
 		}
 
 		set[path] = &File{
-			path: path,
-			fs:   filesystem,
+			path:     path,
+			fs:       filesystem,
+			metadata: &Metadata{},
 		}
 
 		return nil

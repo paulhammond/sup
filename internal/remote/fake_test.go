@@ -1,12 +1,14 @@
 package remote_test
 
 import (
+	"reflect"
 	"testing"
 
+	"github.com/paulhammond/sup/internal/object"
 	"github.com/paulhammond/sup/internal/remote"
 )
 
-func TestFakeHash(t *testing.T) {
+func TestFake(t *testing.T) {
 	dir := t.TempDir()
 	err := remote.CreateFake(dir + "/tmp.db")
 	ok(t, err, "CreateFake")
@@ -18,11 +20,17 @@ func TestFakeHash(t *testing.T) {
 	ok(t, err, "Set")
 
 	obj := set["a.txt"]
+
 	hash, err := obj.Hash()
 	ok(t, err, "Hash")
-
 	if exp := "2a1d0c6e83f027327d8461063f4ac58a6"; hash != exp {
 		t.Errorf("Wrong MD5:\ngot %q\nexp %q", hash, exp)
+	}
+
+	metadata, err := obj.Metadata()
+	ok(t, err, "Metadata")
+	if exp := (&object.Metadata{ContentType: str("text/plain")}); !reflect.DeepEqual(exp, metadata) {
+		t.Errorf("metadata wrong\ngot: %#v\nexp: %#v", metadata, exp)
 	}
 }
 
@@ -31,4 +39,8 @@ func ok(t *testing.T, err error, msg string) {
 	if err != nil {
 		t.Fatalf("%s: unexpected error: %s", msg, err.Error())
 	}
+}
+
+func str(v string) *string {
+	return &v
 }

@@ -19,6 +19,10 @@ func (o testObject) Hash() (string, error) {
 	return string(o), nil
 }
 
+func (o testObject) Metadata() (*object.Metadata, error) {
+	return nil, errors.New("not implemented")
+}
+
 func TestDiffBasic(t *testing.T) {
 
 	old := object.Set{
