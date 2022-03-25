@@ -72,6 +72,15 @@ func Run() int {
 		fmt.Println(path)
 	}
 
+	if len(toUpload) > 0 {
+		fmt.Println("uploading:")
+		err = r.Upload(toUpload)
+		if err != nil {
+			return printError(err)
+		}
+		fmt.Println("done")
+	}
+
 	return 0
 }
 

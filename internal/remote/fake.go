@@ -39,6 +39,50 @@ func (r *fake) Set() (object.Set, error) {
 	return set, nil
 }
 
+func (r *fake) Upload(set object.Set) error {
+	err := r.db.Update(func(tx *bbolt.Tx) error {
+		for path, o := range set {
+			err := r.uploadFile(tx, path, o)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
+}
+
+func (r *fake) uploadFile(tx *bbolt.Tx, path string, o object.Object) error {
+	valueBucket := tx.Bucket([]byte("values"))
+	metadataBucket := tx.Bucket([]byte("metadata"))
+
+	err := o.Open(func(r io.Reader) error {
+		// upload file
+		val, err := io.ReadAll(r)
+		if err != nil {
+			return err
+		}
+		err = valueBucket.Put([]byte(path), val)
+		if err != nil {
+			return err
+		}
+
+		// upload metadata
+		m, err := o.Metadata()
+		if err != nil {
+			return err
+		}
+		if m.ContentType != nil {
+			err = metadataBucket.Put([]byte(path+":contenttype"), []byte(*m.ContentType))
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
+}
+
 type fakeObject struct {
 	db   *bbolt.DB
 	path string

@@ -1,6 +1,14 @@
+# prep
 prep remote.db
+
+# upload
 sup config.hcl remote.db
 cmp stdout output.txt
+! stderr .
+
+# check
+sup config.hcl remote.db
+cmp stdout output2.txt
 ! stderr .
 
 -- config.hcl --
@@ -18,6 +26,21 @@ d.txt
 upload:
 a.txt
 c.txt
+delete:
+d.txt
+uploading:
+done
+-- output2.txt --
+local files:
+a.txt
+b.txt
+c.txt
+remote files:
+a.txt
+b.txt
+c.txt
+d.txt
+upload:
 delete:
 d.txt
 -- src/a.txt --
