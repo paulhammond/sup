@@ -19,7 +19,11 @@ local files:
 a.txt
 b.txt
 c.txt
-applying filters: done
+applying filters:
+detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
+detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
+detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
+done
 remote files:
 a.txt
 b.txt

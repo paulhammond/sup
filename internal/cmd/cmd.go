@@ -56,7 +56,7 @@ func Run() int {
 	}
 
 	UI.Start("applying filters:")
-	err = filter.Filter(&set)
+	err = filter.Filter(&set, UI.DebugF)
 	if err != nil {
 		return UI.Error(err)
 	}

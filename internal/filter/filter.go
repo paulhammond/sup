@@ -2,10 +2,10 @@ package filter
 
 import "github.com/paulhammond/sup/internal/object"
 
-func Filter(set *object.Set) error {
+func Filter(set *object.Set, debug DebugFunc) error {
 
-	for p, o := range *set {
-		err := detectType(p, o)
+	for _, p := range (*set).Paths() {
+		err := detectType(p, (*set)[p], debug)
 		if err != nil {
 			return err
 		}
@@ -13,3 +13,5 @@ func Filter(set *object.Set) error {
 
 	return nil
 }
+
+type DebugFunc func(string, ...any)

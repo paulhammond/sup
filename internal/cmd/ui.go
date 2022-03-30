@@ -26,6 +26,13 @@ func (u *ui) Debug(s string) {
 	u.Output(s)
 }
 
+func (u *ui) DebugF(format string, a ...any) {
+	if !*u.Verbose {
+		return
+	}
+	u.Debug(fmt.Sprintf(format, a...))
+}
+
 func (u *ui) Error(err error) int {
 	fmt.Fprintf(os.Stderr, "error: %s\n", err)
 	return 1

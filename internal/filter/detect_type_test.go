@@ -1,6 +1,8 @@
 package filter
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"testing"
 
@@ -12,14 +14,20 @@ func TestDetectType(t *testing.T) {
 	objects, err := object.FS(os.DirFS("testdata/detect_type"))
 	ok(t, err, "New")
 
-	expected := map[string]string{
-		"extension.txt":    "text/plain; charset=utf-8",
-		"extension.html":   "text/html; charset=utf-8",
-		"contents-html":    "text/html; charset=utf-8",
-		"contents-unknown": "application/octet-stream",
+	expected := [][2]string{
+		{"extension.txt", "text/plain; charset=utf-8"},
+		{"extension.html", "text/html; charset=utf-8"},
+		{"contents-html", "text/html; charset=utf-8"},
+		{"contents-unknown", "application/octet-stream"},
 	}
-	for path, exp := range expected {
-		err = detectType(path, objects[path])
+	debug := &bytes.Buffer{}
+
+	for _, tt := range expected {
+		path, exp := tt[0], tt[1]
+
+		err = detectType(path, objects[path], func(format string, a ...any) {
+			fmt.Fprintf(debug, format+"\n", a...)
+		})
 		ok(t, err, "detectType "+path)
 
 		m, err := objects[path].Metadata()
@@ -30,6 +38,17 @@ func TestDetectType(t *testing.T) {
 		} else if *m.ContentType != exp {
 			t.Errorf("detectType %s:\ngot %q\nexp %q", path, *m.ContentType, exp)
 		}
+	}
+
+	expectedDebug := `
+detecttype [extension.txt] detected "text/plain; charset=utf-8" via extension
+detecttype [extension.html] detected "text/html; charset=utf-8" via extension
+detecttype [contents-html] detected "text/html; charset=utf-8" via contents
+detecttype [contents-unknown] detected "application/octet-stream" via contents
+`[1:] // trim leading newline
+
+	if got := debug.String(); got != expectedDebug {
+		t.Errorf("detectType debug:\ngot\n%q\nexp\n%q", got, expectedDebug)
 	}
 }
 

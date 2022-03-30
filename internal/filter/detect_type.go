@@ -9,17 +9,19 @@ import (
 	"github.com/paulhammond/sup/internal/object"
 )
 
-func detectType(path string, o object.Object) error {
+func detectType(path string, o object.Object, debug DebugFunc) error {
 	metadata, err := o.Metadata()
 	if err != nil {
 		return err
 	}
 	if metadata.ContentType == nil || *metadata.ContentType == "" || *metadata.ContentType == "application/octet-stream" {
 		contentType := ""
+		method := ""
 
 		extension := filepath.Ext(path)
 		if extension != "" {
 			contentType = mime.TypeByExtension(extension)
+			method = "extension"
 		}
 
 		if contentType == "" {
@@ -33,9 +35,11 @@ func detectType(path string, o object.Object) error {
 			}
 
 			contentType = http.DetectContentType(buffer)
+			method = "contents"
 		}
 
 		metadata.ContentType = &contentType
+		debug("detecttype [%s] detected %q via %s", path, contentType, method)
 	}
 	return nil
 }
