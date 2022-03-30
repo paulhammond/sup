@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/paulhammond/sup/internal/object"
 	"go.etcd.io/bbolt"
@@ -39,13 +40,14 @@ func (r *fake) Set() (object.Set, error) {
 	return set, nil
 }
 
-func (r *fake) Upload(set object.Set) error {
+func (r *fake) Upload(set object.Set, f func(Event)) error {
 	err := r.db.Update(func(tx *bbolt.Tx) error {
-		for path, o := range set {
-			err := r.uploadFile(tx, path, o)
+		for _, path := range set.Paths() {
+			err := r.uploadFile(tx, path, set[path])
 			if err != nil {
 				return err
 			}
+			f(Event{Upload, path, set[path], time.Duration(123 * time.Millisecond)})
 		}
 		return nil
 	})

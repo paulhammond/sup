@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/filter"
@@ -82,7 +83,9 @@ func Run() int {
 
 	if len(toUpload) > 0 {
 		fmt.Println("uploading:")
-		err = r.Upload(toUpload)
+		err = r.Upload(toUpload, func(e remote.Event) {
+			fmt.Printf("%s [%s]\n", e.Path, formatDuration(e.Duration))
+		})
 		if err != nil {
 			return printError(err)
 		}
@@ -103,4 +106,11 @@ func printUsage() int {
 	fmt.Fprintln(os.Stderr, "Arguments:")
 	fmt.Fprintln(os.Stderr, "<config>    Config File")
 	return 2
+}
+
+func formatDuration(d time.Duration) string {
+	if d < time.Millisecond {
+		return "~0ms"
+	}
+	return d.String()
 }

@@ -31,6 +31,8 @@ c.txt
 delete:
 d.txt
 uploading:
+a.txt [123ms]
+c.txt [123ms]
 done
 -- output2.txt --
 local files:
