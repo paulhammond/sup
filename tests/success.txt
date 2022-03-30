@@ -3,13 +3,13 @@ prep remote.db
 
 # upload
 sup config.hcl remote.db
-cmp stdout output.txt
-! stderr .
+cmp stderr output.txt
+! stdout .
 
 # check
 sup config.hcl remote.db
-cmp stdout output2.txt
-! stderr .
+cmp stderr output2.txt
+! stdout .
 
 -- config.hcl --
 source = "src"
@@ -19,8 +19,7 @@ local files:
 a.txt
 b.txt
 c.txt
-applying filters:
-done
+applying filters: done
 remote files:
 a.txt
 b.txt
@@ -39,8 +38,7 @@ local files:
 a.txt
 b.txt
 c.txt
-applying filters:
-done
+applying filters: done
 remote files:
 a.txt
 b.txt

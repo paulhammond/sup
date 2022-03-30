@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/filter"
@@ -15,10 +14,12 @@ import (
 
 func Run() int {
 
+	UI := &ui{}
+
 	cmd := pflag.NewFlagSet("sup", pflag.ExitOnError)
 	err := cmd.Parse(os.Args[1:])
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
 
 	args := cmd.Args()
@@ -28,89 +29,69 @@ func Run() int {
 
 	cfg, err := cfg.Parse(args[0])
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
 
 	r, err := remote.Open(args[1])
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
 	defer func() {
 		err := r.Close()
 		if err != nil {
-			printError(err)
+			UI.Error(err)
 		}
 	}()
 
 	set, err := object.FS(os.DirFS(cfg.SourceClean()))
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
 
-	fmt.Println("local files:")
+	UI.Output("local files:")
 	for _, path := range set.Paths() {
-		fmt.Println(path)
+		UI.Output(path)
 	}
 
-	fmt.Println("applying filters:")
+	UI.Start("applying filters:")
 	err = filter.Filter(&set)
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
-	fmt.Println("done")
+	UI.Done("done")
 
 	remoteSet, err := r.Set()
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
-	fmt.Println("remote files:")
+	UI.Output("remote files:")
 	for _, path := range remoteSet.Paths() {
-		fmt.Println(path)
+		UI.Output(path)
 	}
 
 	toUpload, toDelete, err := remoteSet.Diff(set)
 	if err != nil {
-		return printError(err)
+		return UI.Error(err)
 	}
-	fmt.Println("upload:")
+	UI.Output("upload:")
 	for _, path := range toUpload.Paths() {
-		fmt.Println(path)
+		UI.Output(path)
 	}
-	fmt.Println("delete:")
+	UI.Output("delete:")
 	for _, path := range toDelete.Paths() {
-		fmt.Println(path)
+		UI.Output(path)
 	}
 
 	if len(toUpload) > 0 {
-		fmt.Println("uploading:")
+		UI.Start("uploading:")
 		err = r.Upload(toUpload, func(e remote.Event) {
-			fmt.Printf("%s [%s]\n", e.Path, formatDuration(e.Duration))
+			UI.Output(fmt.Sprintf("%s [%s]", e.Path, formatDuration(e.Duration)))
 		})
 		if err != nil {
-			return printError(err)
+			return UI.Error(err)
 		}
-		fmt.Println("done")
+		UI.Done("done")
 	}
 
 	return 0
-}
-
-func printError(err error) int {
-	fmt.Fprintf(os.Stderr, "error: %s\n", err.Error())
-	return 1
-}
-
-func printUsage() int {
-	fmt.Fprintln(os.Stderr, "usage: sup <config>")
-	fmt.Fprintln(os.Stderr, "")
-	fmt.Fprintln(os.Stderr, "Arguments:")
-	fmt.Fprintln(os.Stderr, "<config>    Config File")
-	return 2
-}
-
-func formatDuration(d time.Duration) string {
-	if d < time.Millisecond {
-		return "~0ms"
-	}
-	return d.String()
 }
