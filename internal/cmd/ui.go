@@ -7,6 +7,7 @@ import (
 )
 
 type ui struct {
+	Verbose *bool
 	started bool
 }
 
@@ -16,6 +17,13 @@ func (u *ui) Output(s string) {
 		fmt.Fprint(os.Stderr, "\n")
 	}
 	fmt.Fprint(os.Stderr, s+"\n")
+}
+
+func (u *ui) Debug(s string) {
+	if !*u.Verbose {
+		return
+	}
+	u.Output(s)
 }
 
 func (u *ui) Error(err error) int {

@@ -14,9 +14,11 @@ import (
 
 func Run() int {
 
-	UI := &ui{}
-
 	cmd := pflag.NewFlagSet("sup", pflag.ExitOnError)
+	var verbose *bool = cmd.BoolP("verbose", "v", false, "verbose output")
+
+	UI := &ui{Verbose: verbose}
+
 	err := cmd.Parse(os.Args[1:])
 	if err != nil {
 		return UI.Error(err)
@@ -48,9 +50,9 @@ func Run() int {
 		return UI.Error(err)
 	}
 
-	UI.Output("local files:")
+	UI.Debug("local files:")
 	for _, path := range set.Paths() {
-		UI.Output(path)
+		UI.Debug(path)
 	}
 
 	UI.Start("applying filters:")
@@ -64,9 +66,9 @@ func Run() int {
 	if err != nil {
 		return UI.Error(err)
 	}
-	UI.Output("remote files:")
+	UI.Debug("remote files:")
 	for _, path := range remoteSet.Paths() {
-		UI.Output(path)
+		UI.Debug(path)
 	}
 
 	toUpload, toDelete, err := remoteSet.Diff(set)

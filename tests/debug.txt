@@ -2,7 +2,7 @@
 prep remote.db
 
 # upload
-sup config.hcl remote.db
+sup -v config.hcl remote.db
 cmp stderr output.txt
 ! stdout .
 
@@ -15,7 +15,15 @@ cmp stderr output2.txt
 source = "src"
 
 -- output.txt --
+local files:
+a.txt
+b.txt
+c.txt
 applying filters: done
+remote files:
+a.txt
+b.txt
+d.txt
 upload:
 a.txt
 c.txt
