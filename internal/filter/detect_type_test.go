@@ -21,14 +21,14 @@ func TestDetectType(t *testing.T) {
 
 	debug := newMockDebug()
 
+	err = detectType(objects, debug.debugFunc)
+	ok(t, err, "detectType")
+
 	for _, tt := range expected {
 		path, exp := tt[0], tt[1]
 
-		err = detectType(path, objects[path], debug.debugFunc)
-		ok(t, err, "detectType "+path)
-
 		m, err := objects[path].Metadata()
-		ok(t, err, "metdata "+path)
+		ok(t, err, "metadata "+path)
 
 		if m.ContentType == nil {
 			t.Errorf("detectType %s:\ngot %#v\nexp %q", path, m.ContentType, exp)
@@ -38,10 +38,10 @@ func TestDetectType(t *testing.T) {
 	}
 
 	expectedDebug := `
-detecttype [extension.txt] detected "text/plain; charset=utf-8" via extension
-detecttype [extension.html] detected "text/html; charset=utf-8" via extension
 detecttype [contents-html] detected "text/html; charset=utf-8" via contents
 detecttype [contents-unknown] detected "application/octet-stream" via contents
+detecttype [extension.html] detected "text/html; charset=utf-8" via extension
+detecttype [extension.txt] detected "text/plain; charset=utf-8" via extension
 `[1:] // trim leading newline
 
 	if got := debug.String(); got != expectedDebug {

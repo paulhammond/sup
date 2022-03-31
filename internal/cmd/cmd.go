@@ -47,7 +47,7 @@ func Run() int {
 	UI.Done("done")
 
 	UI.Start("Applying filters:")
-	err = filter.Filter(&set, cfg, func(format string, a ...any) {
+	err = filter.Filter(set, cfg, func(format string, a ...any) {
 		UI.Debug(fmt.Sprintf("· "+format, a...))
 	})
 	if err != nil {

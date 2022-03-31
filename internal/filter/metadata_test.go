@@ -1,8 +1,6 @@
 package filter
 
 import (
-	"errors"
-	"io"
 	"testing"
 
 	"github.com/paulhammond/sup/internal/cfg"
@@ -18,6 +16,11 @@ func TestAddMetadata(t *testing.T) {
 
 	debug := newMockDebug()
 
+	set := object.Set{
+		"foo.png": object.NewBlob([]byte{}, object.Metadata{}),
+		"foo.txt": object.NewBlob([]byte{}, object.Metadata{}),
+	}
+
 	tests := map[string]struct {
 		ContentType *string
 	}{
@@ -25,15 +28,14 @@ func TestAddMetadata(t *testing.T) {
 		"foo.txt": {ContentType: str("text/plain; charset=utf-8")},
 	}
 
-	for path, exp := range tests {
-		o := testObject{m: &object.Metadata{}}
-		err := addMetadata(cfg, path, o, debug.debugFunc)
-		ok(t, err, "addMetadata "+path)
+	err := addMetadata(cfg, set, debug.debugFunc)
+	ok(t, err, "addMetadata")
 
+	for path, exp := range tests {
+		o := set[path]
 		m, err := o.Metadata()
 		ok(t, err, "Metadata "+path)
 		checkStringRef(t, m.ContentType, exp.ContentType, path+" ContentType")
-
 	}
 
 	expectedDebug := `metadata [foo.txt] matches "**/*.txt" set ContentType "text/plain; charset=utf-8"` + "\n"
@@ -62,20 +64,4 @@ func checkStringRef(t *testing.T, got *string, expected *string, msg string) {
 			}
 		}
 	}
-}
-
-type testObject struct {
-	m *object.Metadata
-}
-
-func (o testObject) Hash() (string, error) {
-	return "", errors.New("not implemented")
-}
-
-func (o testObject) Metadata() (*object.Metadata, error) {
-	return o.m, nil
-}
-
-func (o testObject) Open(func(io.Reader) error) error {
-	return errors.New("not implemented")
 }

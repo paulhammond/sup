@@ -39,10 +39,10 @@ done
 Applying filters:
 · ignore [f.txt] matches "f.txt" ignoring
 · redirect [g] created redirect to "http://www.example.com/"
+· metadata [e.txt] matches "e.*" set ContentType "text/plain; charset=utf-8"
 · detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
-· metadata [e.txt] matches "e.*" set ContentType "text/plain; charset=utf-8"
 · detecttype [h.trim.txt] detected "text/plain; charset=utf-8" via extension
 · trim [h] moved from h.trim.txt
 done
