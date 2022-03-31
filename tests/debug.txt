@@ -2,6 +2,7 @@
 prep remote.db
 
 # upload
+stdin y
 sup -v config.hcl remote.db
 cmp stderr output.txt
 ! stdout .
@@ -15,36 +16,45 @@ cmp stderr output2.txt
 source = "src"
 
 -- output.txt --
-local files:
-a.txt
-b.txt
-c.txt
-applying filters:
-detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
-detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
-detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
+Scanning local files:
+· found a.txt
+· found b.txt
+· found c.txt
 done
-remote files:
-a.txt
-b.txt
-d.txt
-upload:
-a.txt
-c.txt
-delete:
-d.txt
-uploading:
-a.txt [123ms]
-c.txt [123ms]
+Applying filters:
+· detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
+· detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
+· detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
 done
+Scanning remote files:
+· found a.txt
+· found b.txt
+· found d.txt
+done
+Comparing: done
+
+These files will be uploaded:
+· a.txt
+· c.txt
+Do you want to upload? (y to approve)
+Uploading:
+· a.txt [123ms]
+· c.txt [123ms]
+done
+These files should be deleted:
+· d.txt
 -- output2.txt --
-applying filters: done
-upload:
-delete:
-d.txt
+Scanning local files: done
+Applying filters: done
+Scanning remote files: done
+Comparing: done
+These files should be deleted:
+· d.txt
 -- src/a.txt --
 a
 -- src/b.txt --
 b
 -- src/c.txt --
 c
+-- y --
+y

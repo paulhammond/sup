@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/filter"
@@ -34,6 +35,27 @@ func Run() int {
 		return UI.Error(err)
 	}
 
+	UI.Start("Scanning local files:")
+	set, err := object.FS(os.DirFS(cfg.SourceClean()))
+	if err != nil {
+		return UI.Error(err)
+	}
+
+	for _, path := range set.Paths() {
+		UI.Debug("· found " + path)
+	}
+	UI.Done("done")
+
+	UI.Start("Applying filters:")
+	err = filter.Filter(&set, func(format string, a ...any) {
+		UI.Debug(fmt.Sprintf("· "+format, a...))
+	})
+	if err != nil {
+		return UI.Error(err)
+	}
+	UI.Done("done")
+
+	UI.Start("Scanning remote files:")
 	r, err := remote.Open(args[1])
 	if err != nil {
 		return UI.Error(err)
@@ -45,54 +67,50 @@ func Run() int {
 		}
 	}()
 
-	set, err := object.FS(os.DirFS(cfg.SourceClean()))
+	remoteSet, err := r.Set()
 	if err != nil {
 		return UI.Error(err)
 	}
-
-	UI.Debug("local files:")
-	for _, path := range set.Paths() {
-		UI.Debug(path)
+	for _, path := range remoteSet.Paths() {
+		UI.Debug("· found " + path)
 	}
+	UI.Done("done")
 
-	UI.Start("applying filters:")
-	err = filter.Filter(&set, UI.DebugF)
+	UI.Start("Comparing:")
+	toUpload, toDelete, err := remoteSet.Diff(set)
 	if err != nil {
 		return UI.Error(err)
 	}
 	UI.Done("done")
 
-	remoteSet, err := r.Set()
-	if err != nil {
-		return UI.Error(err)
-	}
-	UI.Debug("remote files:")
-	for _, path := range remoteSet.Paths() {
-		UI.Debug(path)
-	}
-
-	toUpload, toDelete, err := remoteSet.Diff(set)
-	if err != nil {
-		return UI.Error(err)
-	}
-	UI.Output("upload:")
-	for _, path := range toUpload.Paths() {
-		UI.Output(path)
-	}
-	UI.Output("delete:")
-	for _, path := range toDelete.Paths() {
-		UI.Output(path)
-	}
-
 	if len(toUpload) > 0 {
-		UI.Start("uploading:")
-		err = r.Upload(toUpload, func(e remote.Event) {
-			UI.Output(fmt.Sprintf("%s [%s]", e.Path, formatDuration(e.Duration)))
-		})
+		UI.Output("")
+		UI.Output("These files will be uploaded:")
+		for _, path := range toUpload.Paths() {
+			UI.Output("· " + path)
+		}
+		y, err := UI.Prompt("Do you want to upload? (y to approve)")
 		if err != nil {
 			return UI.Error(err)
 		}
-		UI.Done("done")
+
+		if strings.ToLower(strings.TrimSpace(y)) != "y" {
+			UI.Output("OK, not uploading")
+		} else {
+			UI.Start("Uploading:")
+			err = r.Upload(toUpload, func(e remote.Event) {
+				UI.Output(fmt.Sprintf("· %s [%s]", e.Path, formatDuration(e.Duration)))
+			})
+			if err != nil {
+				return UI.Error(err)
+			}
+			UI.Done("done")
+		}
+	}
+
+	UI.Output("These files should be deleted:")
+	for _, path := range toDelete.Paths() {
+		UI.Output("· " + path)
 	}
 
 	return 0

@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"time"
 )
@@ -26,13 +28,6 @@ func (u *ui) Debug(s string) {
 	u.Output(s)
 }
 
-func (u *ui) DebugF(format string, a ...any) {
-	if !*u.Verbose {
-		return
-	}
-	u.Debug(fmt.Sprintf(format, a...))
-}
-
 func (u *ui) Error(err error) int {
 	fmt.Fprintf(os.Stderr, "error: %s\n", err)
 	return 1
@@ -53,6 +48,19 @@ func (u *ui) Done(s string) {
 		u.started = false
 	}
 	fmt.Fprint(os.Stderr, prefix+s+"\n")
+}
+
+func (u *ui) Prompt(s string) (string, error) {
+	u.Output(s)
+
+	response, err := bufio.NewReader(os.Stdin).ReadString('\n')
+	if err == io.EOF {
+		return "", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return response, nil
 }
 
 func printUsage() int {

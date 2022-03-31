@@ -2,14 +2,9 @@
 prep remote.db
 
 # upload
-stdin y
+stdin n
 sup config.hcl remote.db
 cmp stderr output.txt
-! stdout .
-
-# check
-sup config.hcl remote.db
-cmp stderr output2.txt
 ! stdout .
 
 -- config.hcl --
@@ -25,17 +20,7 @@ These files will be uploaded:
 · a.txt
 · c.txt
 Do you want to upload? (y to approve)
-Uploading:
-· a.txt [123ms]
-· c.txt [123ms]
-done
-These files should be deleted:
-· d.txt
--- output2.txt --
-Scanning local files: done
-Applying filters: done
-Scanning remote files: done
-Comparing: done
+OK, not uploading
 These files should be deleted:
 · d.txt
 -- src/a.txt --
@@ -44,5 +29,5 @@ a
 b
 -- src/c.txt --
 c
--- y --
-y
+-- n --
+n

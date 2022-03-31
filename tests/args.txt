@@ -18,3 +18,5 @@ stderr 'fake remote not initialized'
 
 -- config.hcl --
 source = "src"
+-- src/a.txt --
+a
