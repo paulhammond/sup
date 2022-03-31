@@ -15,16 +15,21 @@ cmp stderr output2.txt
 -- config.hcl --
 source = "src"
 
+metadata "e.*" {
+    content_type = "text/plain; charset=utf-8"
+}
 -- output.txt --
 Scanning local files:
 · found a.txt
 · found b.txt
 · found c.txt
+· found e.txt
 done
 Applying filters:
 · detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
+· metadata [e.txt] matches "e.*" set ContentType "text/plain; charset=utf-8"
 done
 Scanning remote files:
 · found a.txt
@@ -36,10 +41,12 @@ Comparing: done
 These files will be uploaded:
 · a.txt
 · c.txt
+· e.txt
 Do you want to upload? (y to approve)
 Uploading:
 · a.txt [123ms]
 · c.txt [123ms]
+· e.txt [123ms]
 done
 These files should be deleted:
 · d.txt
@@ -56,5 +63,7 @@ a
 b
 -- src/c.txt --
 c
+-- src/e.txt --
+e
 -- y --
 y

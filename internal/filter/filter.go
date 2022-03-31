@@ -1,11 +1,20 @@
 package filter
 
-import "github.com/paulhammond/sup/internal/object"
+import (
+	"github.com/paulhammond/sup/internal/cfg"
+	"github.com/paulhammond/sup/internal/object"
+)
 
-func Filter(set *object.Set, debug DebugFunc) error {
+func Filter(set *object.Set, cfg cfg.Config, debug DebugFunc) error {
 
 	for _, p := range (*set).Paths() {
-		err := detectType(p, (*set)[p], debug)
+		o := (*set)[p]
+		err := addMetadata(cfg, p, o, debug)
+		if err != nil {
+			return err
+		}
+
+		err = detectType(p, o, debug)
 		if err != nil {
 			return err
 		}

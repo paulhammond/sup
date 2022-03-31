@@ -3,6 +3,7 @@ module github.com/paulhammond/sup
 go 1.18
 
 require (
+	github.com/bmatcuk/doublestar/v2 v2.0.4
 	github.com/hashicorp/hcl/v2 v2.11.1
 	github.com/rogpeppe/go-internal v1.8.1
 	github.com/spf13/pflag v1.0.2

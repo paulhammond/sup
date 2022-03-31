@@ -7,8 +7,14 @@ import (
 )
 
 type Config struct {
-	path   string
-	Source string `hcl:"source,optional"`
+	path     string
+	Source   string     `hcl:"source,optional"`
+	Metadata []Metadata `hcl:"metadata,block"`
+}
+
+type Metadata struct {
+	Pattern     string  `hcl:"type,label"`
+	ContentType *string `hcl:"content_type"`
 }
 
 func (c Config) SourceClean() string {

@@ -1,8 +1,6 @@
 package filter
 
 import (
-	"bytes"
-	"fmt"
 	"os"
 	"testing"
 
@@ -20,14 +18,13 @@ func TestDetectType(t *testing.T) {
 		{"contents-html", "text/html; charset=utf-8"},
 		{"contents-unknown", "application/octet-stream"},
 	}
-	debug := &bytes.Buffer{}
+
+	debug := newMockDebug()
 
 	for _, tt := range expected {
 		path, exp := tt[0], tt[1]
 
-		err = detectType(path, objects[path], func(format string, a ...any) {
-			fmt.Fprintf(debug, format+"\n", a...)
-		})
+		err = detectType(path, objects[path], debug.debugFunc)
 		ok(t, err, "detectType "+path)
 
 		m, err := objects[path].Metadata()
