@@ -30,6 +30,11 @@ func Filter(set *object.Set, cfg cfg.Config, debug DebugFunc) error {
 		}
 	}
 
+	err = trim(cfg, *set, debug)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

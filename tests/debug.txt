@@ -17,6 +17,8 @@ source = "src"
 
 redirects = true
 
+trim_suffix = [".trim.txt"]
+
 ignore = [
     "f.txt"
 ]
@@ -32,6 +34,7 @@ Scanning local files:
 · found e.txt
 · found f.txt
 · found g.redirect
+· found h.trim.txt
 done
 Applying filters:
 · ignore [f.txt] matches "f.txt" ignoring
@@ -40,6 +43,8 @@ Applying filters:
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
 · metadata [e.txt] matches "e.*" set ContentType "text/plain; charset=utf-8"
+· detecttype [h.trim.txt] detected "text/plain; charset=utf-8" via extension
+· trim [h] moved from h.trim.txt
 done
 Scanning remote files:
 · found a.txt
@@ -53,12 +58,14 @@ These files will be uploaded:
 · c.txt
 · e.txt
 · g
+· h
 Do you want to upload? (y to approve)
 Uploading:
 · a.txt [123ms]
 · c.txt [123ms]
 · e.txt [123ms]
 · g [123ms]
+· h [123ms]
 done
 These files should be deleted:
 · d.txt
@@ -81,5 +88,7 @@ e
 f
 -- src/g.redirect --
 http://www.example.com/
+-- src/h.trim.txt --
+h
 -- y --
 y

@@ -17,6 +17,8 @@ source = "src"
 
 redirects = true
 
+trim_suffix = [".trim.txt"]
+
 ignore = [
     "f.txt"
 ]
@@ -35,12 +37,14 @@ These files will be uploaded:
 · c.txt
 · e.txt
 · g
+· h
 Do you want to upload? (y to approve)
 Uploading:
 · a.txt [123ms]
 · c.txt [123ms]
 · e.txt [123ms]
 · g [123ms]
+· h [123ms]
 done
 These files should be deleted:
 · d.txt
@@ -63,5 +67,7 @@ e
 f
 -- src/g.redirect --
 http://www.example.com/
+-- src/h.trim.txt --
+h
 -- y --
 y
