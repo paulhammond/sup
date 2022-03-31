@@ -9,6 +9,7 @@ import (
 type Config struct {
 	path     string
 	Source   string     `hcl:"source,optional"`
+	Ignore   []string   `hcl:"ignore,optional"`
 	Metadata []Metadata `hcl:"metadata,block"`
 }
 

@@ -15,6 +15,10 @@ cmp stderr output2.txt
 -- config.hcl --
 source = "src"
 
+ignore = [
+    "f.txt"
+]
+
 metadata "e.*" {
     content_type = "text/plain; charset=utf-8"
 }
@@ -24,8 +28,10 @@ Scanning local files:
 · found b.txt
 · found c.txt
 · found e.txt
+· found f.txt
 done
 Applying filters:
+· ignore [f.txt] matches "f.txt" ignoring
 · detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
@@ -65,5 +71,7 @@ b
 c
 -- src/e.txt --
 e
+-- src/f.txt --
+f
 -- y --
 y

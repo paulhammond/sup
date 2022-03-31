@@ -7,6 +7,11 @@ import (
 
 func Filter(set *object.Set, cfg cfg.Config, debug DebugFunc) error {
 
+	err := ignore(cfg, (*set), debug)
+	if err != nil {
+		return err
+	}
+
 	for _, p := range (*set).Paths() {
 		o := (*set)[p]
 		err := addMetadata(cfg, p, o, debug)
