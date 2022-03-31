@@ -12,6 +12,11 @@ func Filter(set *object.Set, cfg cfg.Config, debug DebugFunc) error {
 		return err
 	}
 
+	err = processRedirect(cfg, *set, debug)
+	if err != nil {
+		return err
+	}
+
 	for _, p := range (*set).Paths() {
 		o := (*set)[p]
 		err := addMetadata(cfg, p, o, debug)

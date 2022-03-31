@@ -15,9 +15,12 @@ cmp stderr output2.txt
 -- config.hcl --
 source = "src"
 
+redirects = true
+
 ignore = [
     "f.txt"
 ]
+
 metadata "e.*" {
     content_type = "text/plain; charset=utf-8"
 }
@@ -31,11 +34,13 @@ These files will be uploaded:
 · a.txt
 · c.txt
 · e.txt
+· g
 Do you want to upload? (y to approve)
 Uploading:
 · a.txt [123ms]
 · c.txt [123ms]
 · e.txt [123ms]
+· g [123ms]
 done
 These files should be deleted:
 · d.txt
@@ -56,5 +61,7 @@ c
 e
 -- src/f.txt --
 f
+-- src/g.redirect --
+http://www.example.com/
 -- y --
 y

@@ -15,6 +15,8 @@ cmp stderr output2.txt
 -- config.hcl --
 source = "src"
 
+redirects = true
+
 ignore = [
     "f.txt"
 ]
@@ -29,9 +31,11 @@ Scanning local files:
 · found c.txt
 · found e.txt
 · found f.txt
+· found g.redirect
 done
 Applying filters:
 · ignore [f.txt] matches "f.txt" ignoring
+· redirect [g] created redirect to "http://www.example.com/"
 · detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [c.txt] detected "text/plain; charset=utf-8" via extension
@@ -48,11 +52,13 @@ These files will be uploaded:
 · a.txt
 · c.txt
 · e.txt
+· g
 Do you want to upload? (y to approve)
 Uploading:
 · a.txt [123ms]
 · c.txt [123ms]
 · e.txt [123ms]
+· g [123ms]
 done
 These files should be deleted:
 · d.txt
@@ -73,5 +79,7 @@ c
 e
 -- src/f.txt --
 f
+-- src/g.redirect --
+http://www.example.com/
 -- y --
 y

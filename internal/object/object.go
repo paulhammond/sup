@@ -27,5 +27,6 @@ type Object interface {
 }
 
 type Metadata struct {
-	ContentType *string
+	ContentType             *string
+	WebsiteRedirectLocation *string
 }
