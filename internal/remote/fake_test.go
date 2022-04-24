@@ -1,6 +1,7 @@
 package remote_test
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
@@ -9,14 +10,16 @@ import (
 )
 
 func TestFake(t *testing.T) {
+	ctx := context.Background()
+
 	dir := t.TempDir()
 	err := remote.CreateFake(dir + "/tmp.db")
 	ok(t, err, "CreateFake")
-	r, err := remote.Open(dir + "/tmp.db")
+	r, err := remote.Open(ctx, dir+"/tmp.db")
 	ok(t, err, "Open")
 	defer r.Close()
 
-	set, err := r.Set()
+	set, err := r.Set(ctx)
 	ok(t, err, "Set")
 
 	obj := set["a.txt"]

@@ -2,6 +2,7 @@ package remote
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"errors"
 	"fmt"
@@ -20,7 +21,7 @@ func (r *fake) Close() error {
 	return r.db.Close()
 }
 
-func (r *fake) Set() (object.Set, error) {
+func (r *fake) Set(ctx context.Context) (object.Set, error) {
 	set := object.Set{}
 
 	err := r.db.View(func(tx *bbolt.Tx) error {
@@ -40,7 +41,7 @@ func (r *fake) Set() (object.Set, error) {
 	return set, nil
 }
 
-func (r *fake) Upload(set object.Set, f func(Event)) error {
+func (r *fake) Upload(ctx context.Context, set object.Set, f func(Event)) error {
 	err := r.db.Update(func(tx *bbolt.Tx) error {
 		for _, path := range set.Paths() {
 			err := r.uploadFile(tx, path, set[path])

@@ -1,0 +1,6 @@
+{
+	a.txt: remote.s3Object<10cc17>,
+	b.txt: remote.s3Object<27c9df>,
+	c.txt: remote.s3Object<14a8a0>,
+	sub/a.txt: remote.s3Object<3a7e86>
+}

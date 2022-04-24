@@ -1,19 +1,31 @@
 package remote
 
 import (
+	"context"
+	"strings"
 	"time"
 
 	"github.com/paulhammond/sup/internal/object"
 )
 
-type Remote interface {
-	Close() error
-	Set() (object.Set, error)
-	Upload(object.Set, func(Event)) error
+var Timer = func() func() time.Duration {
+	t0 := time.Now()
+	return func() time.Duration {
+		return time.Now().Sub(t0)
+	}
 }
 
-func Open(p string) (Remote, error) {
-	return openFake(p)
+type Remote interface {
+	Close() error
+	Set(context.Context) (object.Set, error)
+	Upload(context.Context, object.Set, func(Event)) error
+}
+
+func Open(ctx context.Context, spec string) (Remote, error) {
+	if strings.HasPrefix(spec, "s3://") {
+		return openS3(ctx, spec)
+	}
+	return openFake(spec)
 }
 
 type Operation = int

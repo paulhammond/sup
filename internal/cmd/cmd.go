@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -14,6 +15,8 @@ import (
 )
 
 func Run() int {
+
+	ctx := context.Background()
 
 	cmd := pflag.NewFlagSet("sup", pflag.ExitOnError)
 	var verbose *bool = cmd.BoolP("verbose", "v", false, "verbose output")
@@ -56,7 +59,7 @@ func Run() int {
 	UI.Done("done")
 
 	UI.Start("Scanning remote files:")
-	r, err := remote.Open(args[1])
+	r, err := remote.Open(ctx, args[1])
 	if err != nil {
 		return UI.Error(err)
 	}
@@ -67,7 +70,7 @@ func Run() int {
 		}
 	}()
 
-	remoteSet, err := r.Set()
+	remoteSet, err := r.Set(ctx)
 	if err != nil {
 		return UI.Error(err)
 	}
@@ -98,7 +101,7 @@ func Run() int {
 			UI.Output("OK, not uploading")
 		} else {
 			UI.Start("Uploading:")
-			err = r.Upload(toUpload, func(e remote.Event) {
+			err = r.Upload(ctx, toUpload, func(e remote.Event) {
 				UI.Output(fmt.Sprintf("· %s [%s]", e.Path, formatDuration(e.Duration)))
 			})
 			if err != nil {

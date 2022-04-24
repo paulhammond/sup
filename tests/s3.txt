@@ -1,0 +1,62 @@
+# prep
+s3init
+
+# upload
+stdin y
+sup config.hcl ${S3_REMOTE}
+cmp stderr output.txt
+! stdout .
+
+-- config.hcl --
+source = "src"
+
+redirects = true
+
+trim_suffix = [".trim.txt"]
+
+ignore = [
+    "f.txt"
+]
+
+metadata "e.*" {
+    content_type = "text/plain; charset=utf-8"
+}
+-- output.txt --
+Scanning local files: done
+Applying filters: done
+Scanning remote files: done
+Comparing: done
+
+These files will be uploaded:
+· a.txt
+· b.txt
+· c.txt
+· e.txt
+· g
+· h
+Do you want to upload? (y to approve)
+Uploading:
+· a.txt [123ms]
+· b.txt [123ms]
+· c.txt [123ms]
+· e.txt [123ms]
+· g [123ms]
+· h [123ms]
+done
+These files should be deleted:
+-- src/a.txt --
+a
+-- src/b.txt --
+b
+-- src/c.txt --
+c
+-- src/e.txt --
+e
+-- src/f.txt --
+f
+-- src/g.redirect --
+http://www.example.com/
+-- src/h.trim.txt --
+h
+-- y --
+y
