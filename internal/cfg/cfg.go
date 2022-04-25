@@ -16,8 +16,9 @@ type Config struct {
 }
 
 type Metadata struct {
-	Pattern     string  `hcl:"type,label"`
-	ContentType *string `hcl:"content_type"`
+	Pattern      string  `hcl:"type,label"`
+	ContentType  *string `hcl:"content_type"`
+	CacheControl *string `hcl:"cache_control"`
 }
 
 func (c Config) SourceClean() string {

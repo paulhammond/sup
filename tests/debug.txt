@@ -24,6 +24,7 @@ ignore = [
 ]
 
 metadata "e.*" {
+    cache_control = "private"
     content_type = "text/plain; charset=utf-8"
 }
 -- output.txt --
@@ -39,6 +40,7 @@ done
 Applying filters:
 · ignore [f.txt] matches "f.txt" ignoring
 · redirect [g] created redirect to "http://www.example.com/"
+· metadata [e.txt] matches "e.*" set CacheControl "private"
 · metadata [e.txt] matches "e.*" set ContentType "text/plain; charset=utf-8"
 · detecttype [a.txt] detected "text/plain; charset=utf-8" via extension
 · detecttype [b.txt] detected "text/plain; charset=utf-8" via extension

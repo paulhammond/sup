@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/paulhammond/sup/internal/cfg"
@@ -10,6 +11,8 @@ import (
 func TestAddMetadata(t *testing.T) {
 	cfg := cfg.Config{
 		Metadata: []cfg.Metadata{
+			{Pattern: "private*", CacheControl: str("private")},
+			{Pattern: "max-age*", CacheControl: str("max-age=60")},
 			{Pattern: "**/*.txt", ContentType: str("text/plain; charset=utf-8")},
 		},
 	}
@@ -17,15 +20,20 @@ func TestAddMetadata(t *testing.T) {
 	debug := newMockDebug()
 
 	set := object.Set{
-		"foo.png": object.NewBlob([]byte{}, object.Metadata{}),
-		"foo.txt": object.NewBlob([]byte{}, object.Metadata{}),
+		"foo.png":     object.NewBlob([]byte{}, object.Metadata{}),
+		"foo.txt":     object.NewBlob([]byte{}, object.Metadata{}),
+		"private.txt": object.NewBlob([]byte{}, object.Metadata{}),
+		"max-age.txt": object.NewBlob([]byte{}, object.Metadata{}),
 	}
 
 	tests := map[string]struct {
-		ContentType *string
+		ContentType  *string
+		CacheControl *string
 	}{
-		"foo.png": {},
-		"foo.txt": {ContentType: str("text/plain; charset=utf-8")},
+		"foo.png":     {},
+		"foo.txt":     {ContentType: str("text/plain; charset=utf-8")},
+		"private.txt": {ContentType: str("text/plain; charset=utf-8"), CacheControl: str("private")},
+		"max-age.txt": {ContentType: str("text/plain; charset=utf-8"), CacheControl: str("max-age=60")},
 	}
 
 	err := addMetadata(cfg, set, debug.debugFunc)
@@ -38,7 +46,14 @@ func TestAddMetadata(t *testing.T) {
 		checkStringRef(t, m.ContentType, exp.ContentType, path+" ContentType")
 	}
 
-	expectedDebug := `metadata [foo.txt] matches "**/*.txt" set ContentType "text/plain; charset=utf-8"` + "\n"
+	expectedDebug := `
+metadata [foo.txt] matches "**/*.txt" set ContentType "text/plain; charset=utf-8"
+metadata [max-age.txt] matches "max-age*" set CacheControl "max-age=60"
+metadata [max-age.txt] matches "**/*.txt" set ContentType "text/plain; charset=utf-8"
+metadata [private.txt] matches "private*" set CacheControl "private"
+metadata [private.txt] matches "**/*.txt" set ContentType "text/plain; charset=utf-8"
+`
+	expectedDebug = strings.TrimPrefix(expectedDebug, "\n")
 	if got := debug.String(); got != expectedDebug {
 		t.Errorf("detectType debug:\ngot\n%s\nexp\n%s", got, expectedDebug)
 	}

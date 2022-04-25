@@ -24,6 +24,7 @@ ignore = [
 ]
 
 metadata "e.*" {
+    cache_control = "private"
     content_type = "text/plain; charset=utf-8"
 }
 -- output.txt --

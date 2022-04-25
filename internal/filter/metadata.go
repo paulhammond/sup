@@ -22,6 +22,11 @@ func addMetadata(cfg cfg.Config, set object.Set, debug DebugFunc) error {
 				return err
 			}
 			if match {
+				if rule.CacheControl != nil {
+					metadata.CacheControl = rule.CacheControl
+					debug("metadata [%s] matches %q set CacheControl %q", path, rule.Pattern, *rule.CacheControl)
+				}
+
 				if rule.ContentType != nil {
 					metadata.ContentType = rule.ContentType
 					debug("metadata [%s] matches %q set ContentType %q", path, rule.Pattern, *rule.ContentType)

@@ -42,6 +42,7 @@ type Object interface {
 }
 
 type Metadata struct {
+	CacheControl            *string
 	ContentType             *string
 	WebsiteRedirectLocation *string
 }
