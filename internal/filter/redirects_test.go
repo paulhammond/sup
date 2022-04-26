@@ -2,6 +2,7 @@ package filter
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/paulhammond/sup/internal/cfg"
@@ -12,15 +13,18 @@ func TestRedirectFiles(t *testing.T) {
 
 	config := cfg.Config{Redirects: true}
 
-	objects, err := object.FS(os.DirFS("testdata/redirects"))
-	ok(t, err, "New")
+	objects := object.Set{
+		"hello.redirect":   object.NewBlob([]byte("https://www.example.com/"), object.Metadata{}),
+		"hello2.redirect":  object.NewBlob([]byte("https://www.example.com/"), object.Metadata{}),
+		"not_redirect.txt": object.NewBlob([]byte("hello"), object.Metadata{}),
+	}
 
 	debug := newMockDebug()
 
-	err = processRedirect(config, objects, debug.debugFunc)
+	err := processRedirect(config, objects, debug.debugFunc)
 	ok(t, err, "processRedirect")
 
-	// was the redirect file moved?
+	// was the first redirect file moved?
 	if _, found := objects["hello.redirect"]; found {
 		t.Fatalf("redirect file not moved")
 	}
@@ -34,6 +38,20 @@ func TestRedirectFiles(t *testing.T) {
 	ok(t, err, "metadata")
 	checkStringRef(t, metadata.WebsiteRedirectLocation, str("https://www.example.com/"), "redirect location")
 
+	// was the second redirect file moved?
+	if _, found := objects["hello2.redirect"]; found {
+		t.Fatalf("redirect file not moved")
+	}
+
+	// did a new file get created?
+	if _, found := objects["hello2"]; !found {
+		t.Fatalf("redirect file not moved")
+	}
+
+	metadata, err = objects["hello2"].Metadata()
+	ok(t, err, "metadata")
+	checkStringRef(t, metadata.WebsiteRedirectLocation, str("https://www.example.com/"), "redirect location")
+
 	// was the other file moved?
 	if _, found := objects["not_redirect.txt"]; !found {
 		t.Fatalf("non-redirect file not left alone")
@@ -43,7 +61,11 @@ func TestRedirectFiles(t *testing.T) {
 	checkStringRef(t, metadata.WebsiteRedirectLocation, nil, "non-redirect location")
 
 	// did we log the right debugging info?
-	expectedDebug := `redirect [hello] created redirect to "https://www.example.com/"` + "\n"
+	expectedDebug := `
+redirect [hello] created redirect to "https://www.example.com/"
+redirect [hello2] created redirect to "https://www.example.com/"
+`
+	expectedDebug = strings.TrimPrefix(expectedDebug, "\n")
 	if got := debug.String(); got != expectedDebug {
 		t.Errorf("detectType debug:\ngot\n%s\nexp\n%s", got, expectedDebug)
 	}

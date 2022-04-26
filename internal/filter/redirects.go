@@ -19,7 +19,7 @@ func processRedirect(config cfg.Config, set object.Set, debug DebugFunc) error {
 	for _, path := range set.Paths() {
 		if strings.HasSuffix(path, ".redirect") {
 			o := set[path]
-			return o.Open(func(r io.Reader) error {
+			err := o.Open(func(r io.Reader) error {
 				br := bufio.NewReader(r)
 				redirect, err := br.ReadString('\n')
 				if err != nil && err != io.EOF {
@@ -39,6 +39,9 @@ func processRedirect(config cfg.Config, set object.Set, debug DebugFunc) error {
 				debug("redirect [%s] created redirect to %q", newPath, redirect)
 				return nil
 			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 
