@@ -7,7 +7,12 @@ import (
 
 func Filter(set object.Set, cfg cfg.Config, debug DebugFunc) error {
 
-	err := ignore(cfg, set, debug)
+	err := ignoreDotfiles(set, debug)
+	if err != nil {
+		return err
+	}
+
+	err = ignore(cfg, set, debug)
 	if err != nil {
 		return err
 	}

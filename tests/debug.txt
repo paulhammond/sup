@@ -29,6 +29,7 @@ metadata "e.*" {
 }
 -- output.txt --
 Scanning local files:
+· found .hidden.txt
 · found a.txt
 · found b.txt
 · found c.txt
@@ -38,6 +39,7 @@ Scanning local files:
 · found h.trim.txt
 done
 Applying filters:
+· dotfile [.hidden.txt] ignoring dotfile
 · ignore [f.txt] matches "f.txt" ignoring
 · redirect [g] created redirect to "http://www.example.com/"
 · metadata [e.txt] matches "e.*" set CacheControl "private"
@@ -92,5 +94,7 @@ f
 http://www.example.com/
 -- src/h.trim.txt --
 h
+-- src/.hidden.txt --
+hidden
 -- y --
 y

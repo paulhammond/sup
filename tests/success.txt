@@ -70,5 +70,7 @@ f
 http://www.example.com/
 -- src/h.trim.txt --
 h
+-- src/.hidden.txt --
+hidden
 -- y --
 y
