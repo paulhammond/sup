@@ -51,10 +51,7 @@ func openS3(ctx context.Context, spec string) (Remote, error) {
 		return nil, errors.New("inconsistent scheme")
 	}
 	bucket := u.Host
-	prefix := strings.TrimPrefix(u.Path, "/")
-
-	// normalize trailing slashes
-	prefix = strings.TrimSuffix(prefix, "/") + "/"
+	prefix := normalizePrefix(u.Path)
 
 	region, err := getRegion(ctx, u.Host)
 	if err != nil {
@@ -72,6 +69,12 @@ func openS3(ctx context.Context, spec string) (Remote, error) {
 	}
 
 	return &s3Remote{bucket: bucket, prefix: prefix, client: client}, nil
+}
+
+func normalizePrefix(p string) string {
+	p = strings.TrimSuffix(p, "/") + "/"
+	p = strings.TrimPrefix(p, "/")
+	return p
 }
 
 func (r *s3Remote) Close() error {
