@@ -15,7 +15,7 @@ func TestRedirectFiles(t *testing.T) {
 
 	objects := object.Set{
 		"hello.redirect":   object.NewBlob([]byte("https://www.example.com/"), object.Metadata{}),
-		"hello2.redirect":  object.NewBlob([]byte("https://www.example.com/"), object.Metadata{}),
+		"newline.redirect": object.NewBlob([]byte("https://www.example.com/\n"), object.Metadata{}),
 		"not_redirect.txt": object.NewBlob([]byte("hello"), object.Metadata{}),
 	}
 
@@ -39,16 +39,16 @@ func TestRedirectFiles(t *testing.T) {
 	checkStringRef(t, metadata.WebsiteRedirectLocation, str("https://www.example.com/"), "redirect location")
 
 	// was the second redirect file moved?
-	if _, found := objects["hello2.redirect"]; found {
+	if _, found := objects["newline.redirect"]; found {
 		t.Fatalf("redirect file not moved")
 	}
 
 	// did a new file get created?
-	if _, found := objects["hello2"]; !found {
+	if _, found := objects["newline"]; !found {
 		t.Fatalf("redirect file not moved")
 	}
 
-	metadata, err = objects["hello2"].Metadata()
+	metadata, err = objects["newline"].Metadata()
 	ok(t, err, "metadata")
 	checkStringRef(t, metadata.WebsiteRedirectLocation, str("https://www.example.com/"), "redirect location")
 
@@ -63,7 +63,7 @@ func TestRedirectFiles(t *testing.T) {
 	// did we log the right debugging info?
 	expectedDebug := `
 redirect [hello] created redirect to "https://www.example.com/"
-redirect [hello2] created redirect to "https://www.example.com/"
+redirect [newline] created redirect to "https://www.example.com/"
 `
 	expectedDebug = strings.TrimPrefix(expectedDebug, "\n")
 	if got := debug.String(); got != expectedDebug {
