@@ -84,30 +84,34 @@ func (r *s3Remote) Close() error {
 func (r s3Remote) Set(ctx context.Context) (object.Set, error) {
 
 	input := &s3.ListObjectsV2Input{
-		Bucket: &r.bucket,
-		Prefix: &r.prefix,
+		Bucket:  &r.bucket,
+		Prefix:  &r.prefix,
+		MaxKeys: 1000,
 	}
-
-	resp, err := r.client.ListObjectsV2(ctx, input)
-	if err != nil {
-		return nil, err
-	}
-
-	// tktk: handle more than 1000 objects
-	// tktk: handle hashes of multipart uploads
 
 	set := object.Set{}
-	for _, item := range resp.Contents {
-		path := *item.Key
-		path = strings.TrimPrefix(path, r.prefix)
-		md5 := strings.Trim(*item.ETag, "\"")
 
-		set[path] = s3Object{
-			remote: r,
-			path:   path,
-			hash:   fmt.Sprintf("%d%s", item.Size, md5),
+	paginator := s3.NewListObjectsV2Paginator(r.client, input)
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			return nil, err
 		}
+		for _, item := range resp.Contents {
+			path := *item.Key
+			path = strings.TrimPrefix(path, r.prefix)
+			md5 := strings.Trim(*item.ETag, "\"")
+
+			set[path] = s3Object{
+				remote: r,
+				path:   path,
+				hash:   fmt.Sprintf("%d%s", item.Size, md5),
+			}
+		}
+
 	}
+
+	// tktk: handle hashes of multipart uploads
 
 	return set, nil
 }
