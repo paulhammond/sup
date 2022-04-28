@@ -3,10 +3,14 @@ package filter
 import (
 	"strings"
 
+	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/object"
 )
 
-func ignoreDotfiles(set object.Set, debug DebugFunc) error {
+func ignoreDotfiles(cfg cfg.Config, set object.Set, debug DebugFunc) error {
+	if cfg.IncludeDotfiles {
+		return nil
+	}
 	for _, path := range set.Paths() {
 		ignore := isDotFile(path)
 

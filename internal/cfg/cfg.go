@@ -7,12 +7,13 @@ import (
 )
 
 type Config struct {
-	path       string
-	Source     string     `hcl:"source,optional"`
-	Ignore     []string   `hcl:"ignore,optional"`
-	Metadata   []Metadata `hcl:"metadata,block"`
-	Redirects  bool       `hcl:"redirects,optional"`
-	TrimSuffix []string   `hcl:"trim_suffix,optional"`
+	path            string
+	Source          string     `hcl:"source,optional"`
+	IncludeDotfiles bool       `hcl:"include_dotfiles,optional"`
+	Ignore          []string   `hcl:"ignore,optional"`
+	Metadata        []Metadata `hcl:"metadata,block"`
+	Redirects       bool       `hcl:"redirects,optional"`
+	TrimSuffix      []string   `hcl:"trim_suffix,optional"`
 }
 
 type Metadata struct {
