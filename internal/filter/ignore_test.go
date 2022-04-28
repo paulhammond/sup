@@ -2,7 +2,6 @@ package filter
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"testing"
 
@@ -12,13 +11,15 @@ import (
 
 func TestIgnore(t *testing.T) {
 
-	objects, err := object.FS(os.DirFS("testdata/ignore"))
-	ok(t, err, "New")
+	objects := object.Set{
+		"one.txt": object.NewString("one"),
+		"two.txt": object.NewString("two"),
+	}
 
 	config := cfg.Config{Ignore: []string{"one.*"}}
 	debug := newMockDebug()
 
-	err = ignore(config, objects, debug.debugFunc)
+	err := ignore(config, objects, debug.debugFunc)
 	ok(t, err, "ignore")
 
 	if exp := []string{"two.txt"}; !reflect.DeepEqual(exp, objects.Paths()) {

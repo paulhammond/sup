@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"os"
 	"testing"
 
 	"github.com/paulhammond/sup/internal/object"
@@ -9,8 +8,12 @@ import (
 
 func TestDetectType(t *testing.T) {
 
-	objects, err := object.FS(os.DirFS("testdata/detect_type"))
-	ok(t, err, "New")
+	objects := object.Set{
+		"contents-html":    object.NewString("<html><p>this is a html file</p>"),
+		"contents-unknown": object.NewString("foo"),
+		"extension.html":   object.NewString(""),
+		"extension.txt":    object.NewString(""),
+	}
 
 	expected := [][2]string{
 		{"extension.txt", "text/plain; charset=utf-8"},
@@ -21,7 +24,7 @@ func TestDetectType(t *testing.T) {
 
 	debug := newMockDebug()
 
-	err = detectType(objects, debug.debugFunc)
+	err := detectType(objects, debug.debugFunc)
 	ok(t, err, "detectType")
 
 	for _, tt := range expected {

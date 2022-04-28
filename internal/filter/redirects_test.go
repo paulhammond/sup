@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"os"
 	"strings"
 	"testing"
 
@@ -76,12 +75,14 @@ func TestRedirectFilesDisabled(t *testing.T) {
 
 	config := cfg.Config{Redirects: false}
 
-	objects, err := object.FS(os.DirFS("testdata/redirects"))
-	ok(t, err, "New")
+	objects := object.Set{
+		"hello.redirect":   object.NewString("https://www.example.com/"),
+		"not_redirect.txt": object.NewString("hello"),
+	}
 
 	debug := newMockDebug()
 
-	err = processRedirect(config, objects, debug.debugFunc)
+	err := processRedirect(config, objects, debug.debugFunc)
 	ok(t, err, "processRedirect")
 
 	// was the redirect file moved?
