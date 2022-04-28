@@ -32,7 +32,7 @@ func TestS3(t *testing.T) {
 	compareSet(t, set, "s3-list")
 
 	toUpload := object.Set{
-		"c.txt": object.NewBlob([]byte("c"), object.Metadata{}),
+		"c.txt": object.NewString("c"),
 	}
 
 	err = r.Upload(ctx, toUpload, func(remote.Event) {})

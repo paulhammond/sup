@@ -14,9 +14,9 @@ func TestRedirectFiles(t *testing.T) {
 	config := cfg.Config{Redirects: true}
 
 	objects := object.Set{
-		"hello.redirect":   object.NewBlob([]byte("https://www.example.com/"), object.Metadata{}),
-		"newline.redirect": object.NewBlob([]byte("https://www.example.com/\n"), object.Metadata{}),
-		"not_redirect.txt": object.NewBlob([]byte("hello"), object.Metadata{}),
+		"hello.redirect":   object.NewString("https://www.example.com/"),
+		"newline.redirect": object.NewString("https://www.example.com/\n"),
+		"not_redirect.txt": object.NewString("hello"),
 	}
 
 	debug := newMockDebug()

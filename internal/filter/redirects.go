@@ -30,7 +30,7 @@ func processRedirect(config cfg.Config, set object.Set, debug DebugFunc) error {
 
 				delete(set, path)
 
-				blob := object.NewBlob([]byte{}, object.Metadata{
+				blob := object.Empty(object.Metadata{
 					ContentType:             &textPlainType,
 					WebsiteRedirectLocation: &redirect,
 				})

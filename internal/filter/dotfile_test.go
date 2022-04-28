@@ -10,7 +10,7 @@ import (
 
 func TestDotfile(t *testing.T) {
 
-	blank := object.NewBlob([]byte{}, object.Metadata{})
+	blank := object.NewString("")
 	objects := object.Set{
 		"file":                       blank,
 		"dir/file":                   blank,

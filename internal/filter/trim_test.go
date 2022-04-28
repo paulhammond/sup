@@ -13,8 +13,8 @@ func TestTrim(t *testing.T) {
 	config := cfg.Config{TrimSuffix: []string{".trim"}}
 
 	objects := object.Set{
-		"one.trim": object.NewBlob([]byte("one"), object.Metadata{}),
-		"two.txt":  object.NewBlob([]byte("two"), object.Metadata{}),
+		"one.trim": object.NewString("one"),
+		"two.txt":  object.NewString("two"),
 	}
 
 	debug := newMockDebug()

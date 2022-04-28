@@ -20,10 +20,10 @@ func TestAddMetadata(t *testing.T) {
 	debug := newMockDebug()
 
 	set := object.Set{
-		"foo.png":     object.NewBlob([]byte{}, object.Metadata{}),
-		"foo.txt":     object.NewBlob([]byte{}, object.Metadata{}),
-		"private.txt": object.NewBlob([]byte{}, object.Metadata{}),
-		"max-age.txt": object.NewBlob([]byte{}, object.Metadata{}),
+		"foo.png":     object.NewString(""),
+		"foo.txt":     object.NewString(""),
+		"private.txt": object.NewString(""),
+		"max-age.txt": object.NewString(""),
 	}
 
 	tests := map[string]struct {

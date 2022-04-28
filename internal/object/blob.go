@@ -5,26 +5,30 @@ import (
 	"io"
 )
 
-var _ Object = Blob{}
+var _ Object = blob{}
 
-type Blob struct {
+type blob struct {
 	contents []byte
 	metadata *Metadata
 }
 
-func NewBlob(contents []byte, metadata Metadata) Object {
-	return Blob{contents: contents, metadata: &metadata}
+func NewString(contents string) Object {
+	return blob{contents: []byte(contents), metadata: &Metadata{}}
 }
 
-func (o Blob) Hash() (*Hash, error) {
+func Empty(metadata Metadata) Object {
+	return blob{contents: []byte{}, metadata: &metadata}
+}
+
+func (o blob) Hash() (*Hash, error) {
 	return GenerateHash(o)
 }
 
-func (o Blob) Open(fnc func(io.Reader) error) error {
+func (o blob) Open(fnc func(io.Reader) error) error {
 	r := bytes.NewReader(o.contents)
 	return fnc(r)
 }
 
-func (o Blob) Metadata() (*Metadata, error) {
+func (o blob) Metadata() (*Metadata, error) {
 	return o.metadata, nil
 }
