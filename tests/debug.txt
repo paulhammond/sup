@@ -96,5 +96,6 @@ http://www.example.com/
 h
 -- src/.hidden.txt --
 hidden
+-- src/.git/INDEX --
 -- y --
 y

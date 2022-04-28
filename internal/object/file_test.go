@@ -9,18 +9,28 @@ import (
 )
 
 func TestSetPaths(t *testing.T) {
-	set, err := object.FS(os.DirFS("../../testdata"))
+	set, err := object.FS(os.DirFS("testdata"), false)
 	ok(t, err, "New")
 
 	actual := set.Paths()
-	expected := []string{"a.txt", "b.txt", "sub/a.txt"}
+	expected := []string{".git/a.txt", "a.txt", "b.txt", "sub/a.txt"}
 	if !(reflect.DeepEqual(actual, expected)) {
 		t.Errorf("Wrong Paths:\ngot %#v\nexp %#v", actual, expected)
 	}
+
+	set, err = object.FS(os.DirFS("testdata"), true)
+	ok(t, err, "New")
+
+	actual = set.Paths()
+	expected = []string{"a.txt", "b.txt", "sub/a.txt"}
+	if !(reflect.DeepEqual(actual, expected)) {
+		t.Errorf("Wrong Paths:\ngot %#v\nexp %#v", actual, expected)
+	}
+
 }
 
 func TestFileHash(t *testing.T) {
-	set, err := object.FS(os.DirFS("../../testdata"))
+	set, err := object.FS(os.DirFS("testdata"), true)
 	ok(t, err, "New")
 
 	obj := set["a.txt"]

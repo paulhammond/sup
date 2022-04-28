@@ -39,7 +39,7 @@ func Run() int {
 	}
 
 	UI.Start("Scanning local files:")
-	set, err := object.FS(os.DirFS(cfg.SourceClean()))
+	set, err := object.FS(os.DirFS(cfg.SourceClean()), !cfg.IncludeDotfiles)
 	if err != nil {
 		return UI.Error(err)
 	}

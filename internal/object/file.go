@@ -36,12 +36,17 @@ func (f File) Metadata() (*Metadata, error) {
 	return f.metadata, nil
 }
 
-func FS(filesystem fs.FS) (Set, error) {
+func FS(filesystem fs.FS, skipGit bool) (Set, error) {
 	set := Set{}
 
 	err := fs.WalkDir(filesystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		// make debug logs slightly clearer
+		if skipGit && d.IsDir() && d.Name() == ".git" {
+			return fs.SkipDir
 		}
 
 		if d.IsDir() {
