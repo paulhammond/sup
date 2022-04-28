@@ -26,17 +26,20 @@ func (s Set) String() string {
 	objects := make([]string, len(s))
 	for i, k := range s.Paths() {
 		hash, err := s[k].Hash()
+		var str string
 		if err != nil {
-			hash = "error"
+			str = "error"
+		} else {
+			str = fmt.Sprintf("%d.%d.%.6s", hash.Size, hash.PartSize, hash.Hash)
 		}
-		objects[i] = fmt.Sprintf("%s: %T<%.6s>", k, s[k], hash)
+		objects[i] = fmt.Sprintf("%s: %T<%s>", k, s[k], str)
 	}
 
 	return fmt.Sprintf("{\n\t%s\n}", strings.Join(objects, ",\n\t"))
 }
 
 type Object interface {
-	Hash() (string, error)
+	Hash() (*Hash, error)
 	Metadata() (*Metadata, error)
 	Open(func(io.Reader) error) error
 }

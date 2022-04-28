@@ -1,5 +1,5 @@
 {
-	a.txt: remote.s3Object<10cc17>,
-	b.txt: remote.s3Object<27c9df>,
-	sub/a.txt: remote.s3Object<3a7e86>
+	a.txt: remote.s3Object<1.0.0cc175>,
+	b.txt: remote.s3Object<2.0.7c9df8>,
+	sub/a.txt: remote.s3Object<3.0.a7e861>
 }

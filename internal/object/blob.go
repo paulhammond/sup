@@ -2,8 +2,6 @@ package object
 
 import (
 	"bytes"
-	"crypto/md5"
-	"fmt"
 	"io"
 )
 
@@ -18,9 +16,8 @@ func NewBlob(contents []byte, metadata Metadata) Object {
 	return Blob{contents: contents, metadata: &metadata}
 }
 
-func (o Blob) Hash() (string, error) {
-	h := md5.Sum(o.contents)
-	return fmt.Sprintf("%d%x", len(o.contents), h[:]), nil
+func (o Blob) Hash() (*Hash, error) {
+	return GenerateHash(o)
 }
 
 func (o Blob) Open(fnc func(io.Reader) error) error {

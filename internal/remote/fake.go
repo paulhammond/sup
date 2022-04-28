@@ -3,9 +3,7 @@ package remote
 import (
 	"bytes"
 	"context"
-	"crypto/md5"
 	"errors"
-	"fmt"
 	"io"
 	"time"
 
@@ -127,13 +125,8 @@ func (o fakeObject) getMetadataValue(key string) *string {
 	return value
 }
 
-func (o fakeObject) Hash() (string, error) {
-	v, err := o.get()
-	if err != nil {
-		return "", err
-	}
-	h := md5.Sum(v)
-	return fmt.Sprintf("%d%x", len(v), h[:]), nil
+func (o fakeObject) Hash() (*object.Hash, error) {
+	return object.GenerateHash(o)
 }
 
 func (o fakeObject) Metadata() (*object.Metadata, error) {

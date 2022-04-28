@@ -3,14 +3,15 @@ package remote
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"net/url"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/paulhammond/sup/internal/object"
 )
 
@@ -19,12 +20,12 @@ var _ object.Object = s3Object{}
 type s3Object struct {
 	remote   s3Remote
 	path     string
-	hash     string
+	hash     object.Hash
 	metadata object.Metadata
 }
 
-func (o s3Object) Hash() (string, error) {
-	return o.hash, nil
+func (o s3Object) Hash() (*object.Hash, error) {
+	return &o.hash, nil
 }
 
 func (o s3Object) Metadata() (*object.Metadata, error) {
@@ -100,20 +101,54 @@ func (r s3Remote) Set(ctx context.Context) (object.Set, error) {
 		for _, item := range resp.Contents {
 			path := *item.Key
 			path = strings.TrimPrefix(path, r.prefix)
-			md5 := strings.Trim(*item.ETag, "\"")
+
+			hash, err := r.getHash(ctx, path, item)
+			if err != nil {
+				return nil, err
+			}
 
 			set[path] = s3Object{
 				remote: r,
 				path:   path,
-				hash:   fmt.Sprintf("%d%s", item.Size, md5),
+				hash:   *hash,
 			}
 		}
 
 	}
 
-	// tktk: handle hashes of multipart uploads
-
 	return set, nil
+}
+
+func (r *s3Remote) getHash(ctx context.Context, path string, item types.Object) (*object.Hash, error) {
+	etag := strings.Trim(*item.ETag, "\"")
+
+	// simple upload
+	if !strings.Contains(etag, "-") {
+		return &object.Hash{
+			Size:     *&item.Size,
+			PartSize: 0,
+			Hash:     etag,
+		}, nil
+	}
+
+	// multipart upload
+	input := &s3.HeadObjectInput{
+		Bucket:     aws.String(r.bucket),
+		Key:        aws.String(path),
+		PartNumber: 1,
+	}
+
+	result, err := r.client.HeadObject(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	partSize := result.ContentLength
+
+	return &object.Hash{
+		Size:     *&item.Size,
+		PartSize: partSize,
+		Hash:     etag,
+	}, nil
 }
 
 func (r *s3Remote) Upload(ctx context.Context, set object.Set, f func(Event)) error {

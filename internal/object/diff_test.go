@@ -2,47 +2,29 @@ package object_test
 
 import (
 	"errors"
-	"io"
 	"reflect"
 	"testing"
 
 	"github.com/paulhammond/sup/internal/object"
 )
 
-type testObject string
-
 var HashErr = errors.New("hash error")
-
-func (o testObject) Hash() (string, error) {
-	if o == "" {
-		return "", HashErr
-	}
-	return string(o), nil
-}
-
-func (o testObject) Metadata() (*object.Metadata, error) {
-	return nil, errors.New("not implemented")
-}
-
-func (o testObject) Open(func(io.Reader) error) error {
-	return errors.New("not implemented")
-}
 
 func TestDiffBasic(t *testing.T) {
 
 	old := object.Set{
-		"same":  testObject("hash"),
-		"diff":  testObject("old"),
-		"extra": testObject("hash"),
+		"same":  object.TestObject{Contents: "hash"},
+		"diff":  object.TestObject{Contents: "old"},
+		"extra": object.TestObject{Contents: "hash"},
 		// won't check the hash on an extra object
-		"extraerr": testObject(""),
+		"extraerr": object.TestObject{Err: HashErr},
 	}
 	new := object.Set{
-		"same":  testObject("hash"),
-		"diff":  testObject("new"),
-		"added": testObject("hash"),
+		"same":  object.TestObject{Contents: "hash"},
+		"diff":  object.TestObject{Contents: "new"},
+		"added": object.TestObject{Contents: "hash"},
 		// won't check the hash on an extra object
-		"addederr": testObject(""),
+		"addederr": object.TestObject{Err: HashErr},
 	}
 
 	toUpload, toDelete, err := old.Diff(new)
@@ -63,9 +45,9 @@ func TestDiffBasic(t *testing.T) {
 func TestDiffMatch(t *testing.T) {
 
 	set := object.Set{
-		"same":  testObject("hash"),
-		"diff":  testObject("old"),
-		"extra": testObject("hash"),
+		"same":  object.TestObject{Contents: "hash"},
+		"diff":  object.TestObject{Contents: "old"},
+		"extra": object.TestObject{Contents: "hash"},
 	}
 
 	toUpload, toDelete, err := set.Diff(set)
@@ -83,12 +65,12 @@ func TestDiffMatch(t *testing.T) {
 func TestDiffError(t *testing.T) {
 
 	good := object.Set{
-		"same": testObject("hash"),
-		"bad":  testObject("ok"),
+		"same": object.TestObject{Contents: "hash"},
+		"bad":  object.TestObject{Contents: "ok"},
 	}
 	bad := object.Set{
-		"same": testObject("hash"),
-		"bad":  testObject(""),
+		"same": object.TestObject{Contents: "hash"},
+		"bad":  object.TestObject{Err: HashErr},
 	}
 
 	toUpload, toDelete, err := good.Diff(bad)

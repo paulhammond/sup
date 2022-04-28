@@ -23,16 +23,12 @@ func (s Set) Diff(new Set) (Set, Set, error) {
 			continue
 		}
 
-		h1, err := f1.Hash()
-		if err != nil {
-			return Set{}, Set{}, err
-		}
-		h2, err := f2.Hash()
+		matches, err := matchHash(f1, f2)
 		if err != nil {
 			return Set{}, Set{}, err
 		}
 
-		if h1 != h2 {
+		if !matches {
 			toUpload[k] = f2
 		}
 	}

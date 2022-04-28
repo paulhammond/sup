@@ -28,8 +28,12 @@ func TestFileHash(t *testing.T) {
 	hash, err := obj.Hash()
 	ok(t, err, "Hash")
 
-	if exp := "10cc175b9c0f1b6a831c399e269772661"; hash != exp {
-		t.Errorf("Wrong MD5:\ngot %q\nexp %q", hash, exp)
+	exp := object.Hash{
+		Size: 1,
+		Hash: "0cc175b9c0f1b6a831c399e269772661",
+	}
+	if hash != nil && !reflect.DeepEqual(*hash, exp) {
+		t.Errorf("Wrong Hash:\ngot %v\nexp %v", hash, exp)
 	}
 
 }

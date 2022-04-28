@@ -26,8 +26,12 @@ func TestFake(t *testing.T) {
 
 	hash, err := obj.Hash()
 	ok(t, err, "Hash")
-	if exp := "2a1d0c6e83f027327d8461063f4ac58a6"; hash != exp {
-		t.Errorf("Wrong MD5:\ngot %q\nexp %q", hash, exp)
+	exp := object.Hash{
+		Size: 2,
+		Hash: "a1d0c6e83f027327d8461063f4ac58a6",
+	}
+	if hash != nil && !reflect.DeepEqual(*hash, exp) {
+		t.Errorf("Wrong Hash:\ngot %v\nexp %v", hash, exp)
 	}
 
 	metadata, err := obj.Metadata()

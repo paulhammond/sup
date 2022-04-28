@@ -1,11 +1,11 @@
 package object
 
 import (
-	"crypto/md5"
-	"fmt"
 	"io"
 	"io/fs"
 )
+
+var _ Object = File{}
 
 type File struct {
 	path     string
@@ -13,18 +13,8 @@ type File struct {
 	metadata *Metadata
 }
 
-func (f File) Hash() (string, error) {
-	var s string
-	err := f.Open(func(r io.Reader) error {
-		h := md5.New()
-		size, err := io.Copy(h, r)
-		if err != nil {
-			return err
-		}
-		s = fmt.Sprintf("%d%x", size, h.Sum(nil))
-		return nil
-	})
-	return s, err
+func (f File) Hash() (*Hash, error) {
+	return GenerateHash(f)
 }
 
 func (f File) Open(fnc func(io.Reader) error) error {
