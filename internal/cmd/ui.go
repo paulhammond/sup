@@ -29,6 +29,9 @@ func (u *ui) Debug(s string) {
 }
 
 func (u *ui) Error(err error) int {
+	if u.started {
+		fmt.Fprint(os.Stderr, "\n")
+	}
 	fmt.Fprintf(os.Stderr, "error: %s\n", err)
 	return 1
 }
