@@ -1,5 +1,5 @@
-# prep a remote
-prep remote.db
+# prep
+fakeinit remote.db
 
 # no args
 ! sup

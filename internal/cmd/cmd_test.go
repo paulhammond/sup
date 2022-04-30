@@ -1,7 +1,6 @@
 package cmd_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -27,6 +26,14 @@ func TestIntegration(t *testing.T) {
 				ts.Setenv("AWS_SECRET_ACCESS_KEY", os.Getenv("AWS_SECRET_ACCESS_KEY"))
 				ts.Setenv("AWS_SESSION_TOKEN", os.Getenv("AWS_SESSION_TOKEN"))
 			},
+
+			"fakeinit": func(ts *testscript.TestScript, neg bool, args []string) {
+				fakePath := ts.MkAbs(args[0])
+				err := remote.CreateFake(fakePath)
+				if err != nil {
+					ts.Fatalf("fakeinit error %s", err)
+				}
+			},
 		},
 
 		Setup: func(env *testscript.Env) error {
@@ -41,16 +48,6 @@ func TestIntegration(t *testing.T) {
 func TestMain(m *testing.M) {
 	remote.Timer = testutil.Timer
 	os.Exit(testscript.RunMain(m, map[string]func() int{
-		"sup":  cmd.Run,
-		"prep": prep,
+		"sup": cmd.Run,
 	}))
-}
-
-func prep() int {
-	err := remote.CreateFake(os.Args[1])
-	if err != nil {
-		fmt.Println(err)
-		return 1
-	}
-	return 0
 }

@@ -1,5 +1,5 @@
 # prep
-prep remote.db
+fakeinit remote.db
 
 # upload
 stdin n
