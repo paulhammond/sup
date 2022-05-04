@@ -20,12 +20,17 @@ func Run() int {
 
 	cmd := pflag.NewFlagSet("sup", pflag.ExitOnError)
 	var verbose *bool = cmd.BoolP("verbose", "v", false, "verbose output")
+	var help *bool = cmd.BoolP("help", "h", false, "show help")
 
 	UI := &ui{Verbose: verbose}
 
 	err := cmd.Parse(os.Args[1:])
 	if err != nil {
 		return UI.Error(err)
+	}
+
+	if *help {
+		return printHelp()
 	}
 
 	args := cmd.Args()

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -67,11 +68,18 @@ func (u *ui) Prompt(s string) (string, error) {
 }
 
 func printUsage() int {
-	fmt.Fprintln(os.Stderr, "usage: sup <config>")
+	fmt.Fprintln(os.Stderr, "Usage: sup [options] <configfile> <remote>")
 	fmt.Fprintln(os.Stderr, "")
-	fmt.Fprintln(os.Stderr, "Arguments:")
-	fmt.Fprintln(os.Stderr, "<config>    Config File")
+	fmt.Fprintln(os.Stderr, "For documentation run 'sup --help'")
 	return 2
+}
+
+//go:embed help.txt
+var helpTxt string
+
+func printHelp() int {
+	fmt.Println(helpTxt)
+	return 0
 }
 
 func formatDuration(d time.Duration) string {

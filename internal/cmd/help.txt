@@ -1,0 +1,82 @@
+sup
+
+sup is a tool for uploading files to S3 in a repeatable manner.
+
+Usage:
+
+    sup [options] <configfile> <remote>
+
+Arguments:
+
+    configfile
+        Path to a config file. See below for details on format and options.
+
+    remote
+        URL of an s3 bucket, in the form 's3://bucket' or 's3://bucket/prefix'
+
+Options:
+
+    -h, --help
+        Show this help text
+
+    -v, --verbose
+        Verbose output
+
+Configuration file format:
+
+    A config file specifies all options that affect the uploaded objects. This
+    makes it easier to ensure that repeated uploads will produce the same
+    result.
+
+    The config file is a HCL formatted file. The simplest config file simply
+    points at the directory that should be uploaded:
+
+        source = "src"
+
+    A more complex file can specify files to ignore, metadata to set on specific
+    keys, and other options. For example:
+
+        source = "src"
+        redirects = true
+        ignore = [
+            "build/"
+        ]
+        metadata "**/foo.txt" {
+            cache_control = "private"
+            content_type = "text/plain; charset=utf-8"
+        }
+
+Configuration options:
+
+    source
+        The path to the directory that should be uploaded. This is relative
+        to the config file and not the working directory of sup.
+
+    include_dotfiles
+        A boolean indicating if sup should upload paths that start with a '.'.
+        By default sup ignores any paths starting with a '.' except for a
+        directory called '.well-known' (to support RFC 8615). Alternative
+        behaviour can be specified using the 'ignore' option.
+
+    ignore
+        A list of file path globs to ignore.
+
+    metadata
+        A list of metadata headers to set on files matching the specified glob.
+        Can be repeated to apply different settings to different files.
+        Supported metadata headers include 'cache_control' and 'content_type'.
+
+    redirects
+        A boolean specifying whether redirect files are processed. A redirect
+        file is a file with a path ending in '.redirect' which contains a URL.
+        sup will strip '.redirect' from the filename, and upload an empty file
+        with an 'x-amz-website-redirect-location' header set to the contents of
+        the file. For example, if your source directory contains a file called
+        'example.redirect' containing the single character '/' then sup will
+        create an object called 'example' with 'x-amz-website-redirect-location'
+        set to '/'.
+
+    trim_suffix
+        A string suffix that sup should remove from any paths. For example, if
+        this is set to '.html' and your source directory contains 'example.html'
+        then sup will create an object at 'example'.

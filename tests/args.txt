@@ -4,7 +4,12 @@ fakeinit remote.db
 # no args
 ! sup
 ! stdout .
-stderr 'usage: sup'
+stderr 'Usage: sup'
+
+# help
+sup --help
+! stderr .
+stdout 'sup is a tool for uploading files to S3'
 
 # no config file
 ! sup notfound.hcl remote.db
