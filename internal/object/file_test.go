@@ -9,7 +9,27 @@ import (
 )
 
 func TestSetPaths(t *testing.T) {
-	set, err := object.FS(os.DirFS("testdata"), false)
+	dir := t.TempDir()
+
+	err := os.MkdirAll(dir+"/sub", 0755)
+	ok(t, err, "Mkdir sub")
+
+	err = os.MkdirAll(dir+"/.git", 0755)
+	ok(t, err, "Mkdir .git")
+
+	err = os.WriteFile(dir+"/a.txt", []byte("a"), 0644)
+	ok(t, err, "WriteFile a.txt")
+
+	err = os.WriteFile(dir+"/b.txt", []byte("b"), 0644)
+	ok(t, err, "WriteFile b.txt")
+
+	err = os.WriteFile(dir+"/sub/a.txt", []byte("sub/a"), 0644)
+	ok(t, err, "WriteFile a.txt")
+
+	err = os.WriteFile(dir+"/.git/a.txt", []byte("sub/a"), 0644)
+	ok(t, err, "WriteFile /git/a.txt")
+
+	set, err := object.FS(os.DirFS(dir), false)
 	ok(t, err, "New")
 
 	actual := set.Paths()
@@ -18,7 +38,7 @@ func TestSetPaths(t *testing.T) {
 		t.Errorf("Wrong Paths:\ngot %#v\nexp %#v", actual, expected)
 	}
 
-	set, err = object.FS(os.DirFS("testdata"), true)
+	set, err = object.FS(os.DirFS(dir), true)
 	ok(t, err, "New")
 
 	actual = set.Paths()
