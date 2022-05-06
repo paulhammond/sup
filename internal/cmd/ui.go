@@ -74,6 +74,17 @@ func printUsage() int {
 	return 2
 }
 
+//go:generate go run github.com/paulhammond/licensepack -pkg cmd ../../cmd/sup
+var licenses string
+
+func printCredits() int {
+	fmt.Println("sup builds on many open source projects. We're grateful to the developers of")
+	fmt.Println("the following projects for their hard work.")
+	fmt.Println("")
+	fmt.Println(licenses)
+	return 0
+}
+
 //go:embed help.txt
 var helpTxt string
 

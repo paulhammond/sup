@@ -37,4 +37,4 @@ For more documentation, including all supported configuration options, run `sup 
 
 ## License
 
-sup is licensed under the MIT license.
+sup is licensed under the MIT license. For information on the licenses of all included modules run `sup --credits`.

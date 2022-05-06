@@ -6,12 +6,13 @@ import (
 	"os"
 	"strings"
 
+	_ "github.com/paulhammond/licensepack/license"
+	"github.com/spf13/pflag"
+
 	"github.com/paulhammond/sup/internal/cfg"
 	"github.com/paulhammond/sup/internal/filter"
 	"github.com/paulhammond/sup/internal/object"
 	"github.com/paulhammond/sup/internal/remote"
-	_ "github.com/rogpeppe/go-internal/testscript"
-	"github.com/spf13/pflag"
 )
 
 func Run() int {
@@ -21,12 +22,17 @@ func Run() int {
 	cmd := pflag.NewFlagSet("sup", pflag.ExitOnError)
 	var verbose *bool = cmd.BoolP("verbose", "v", false, "verbose output")
 	var help *bool = cmd.BoolP("help", "h", false, "show help")
+	var credits *bool = cmd.Bool("credits", false, "show open source credits")
 
 	UI := &ui{Verbose: verbose}
 
 	err := cmd.Parse(os.Args[1:])
 	if err != nil {
 		return UI.Error(err)
+	}
+
+	if *credits {
+		return printCredits()
 	}
 
 	if *help {

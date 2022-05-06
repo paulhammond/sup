@@ -11,6 +11,12 @@ sup --help
 ! stderr .
 stdout 'sup is a tool for uploading files to S3'
 
+# credits
+sup --credits
+! stderr .
+stdout 'the following projects'
+stdout 'github.com/aws/aws-sdk-go-v2'
+
 # no config file
 ! sup notfound.hcl remote.db
 ! stdout .
