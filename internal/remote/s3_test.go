@@ -21,7 +21,7 @@ func TestS3(t *testing.T) {
 	ctx := context.Background()
 	url := testutil.S3Remote(t)
 
-	createTestData(t, "../../testdata/", url)
+	createTestData(t, "testdata/content", url)
 	r, err := remote.Open(ctx, url)
 	ok(t, err, "Open")
 	defer r.Close()
