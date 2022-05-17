@@ -1,6 +1,3 @@
-# prep
-fakeinit remote.db
-
 # no args
 ! sup
 ! stdout .
@@ -18,14 +15,14 @@ stdout 'the following projects'
 stdout 'github.com/aws/aws-sdk-go-v2'
 
 # no config file
-! sup notfound.hcl remote.db
+! sup notfound.hcl s3://bucket/
 ! stdout .
 stderr 'error: <nil>: Configuration file not found' # tktk make less verbose
 
 # no remote
-! sup config.hcl notfound.db
+! sup config.hcl remote
 ! stdout .
-stderr 'fake remote not initialized'
+stderr 'Unknown remote: remote'
 
 -- config.hcl --
 source = "src"

@@ -2,6 +2,7 @@ package remote
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -21,11 +22,14 @@ type Remote interface {
 	Upload(context.Context, object.Set, func(Event)) error
 }
 
-func Open(ctx context.Context, spec string) (Remote, error) {
+func Open(ctx context.Context, spec string, allowFakes bool) (Remote, error) {
 	if strings.HasPrefix(spec, "s3://") {
 		return openS3(ctx, spec)
 	}
-	return openFake(spec)
+	if allowFakes {
+		return openFake(spec)
+	}
+	return nil, fmt.Errorf("Unknown remote: %s", spec)
 }
 
 type Operation = int

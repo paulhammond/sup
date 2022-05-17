@@ -24,6 +24,9 @@ func Run() int {
 	var help *bool = cmd.BoolP("help", "h", false, "show help")
 	var credits *bool = cmd.Bool("credits", false, "show open source credits")
 
+	// this is set by the test scripts to enable bolt-db based fake remotes
+	_, allowFakes := (os.LookupEnv("SUP_DEBUG_FAKE_REMOTE"))
+
 	UI := &ui{Verbose: verbose}
 
 	err := cmd.Parse(os.Args[1:])
@@ -70,7 +73,8 @@ func Run() int {
 	UI.Done("done")
 
 	UI.Start("Scanning remote files:")
-	r, err := remote.Open(ctx, args[1])
+
+	r, err := remote.Open(ctx, args[1], allowFakes)
 	if err != nil {
 		return UI.Error(err)
 	}

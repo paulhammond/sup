@@ -22,7 +22,7 @@ func TestS3(t *testing.T) {
 	url := testutil.S3Remote(t)
 
 	createTestData(t, "testdata/content", url)
-	r, err := remote.Open(ctx, url)
+	r, err := remote.Open(ctx, url, false)
 	ok(t, err, "Open")
 	defer r.Close()
 
@@ -38,7 +38,7 @@ func TestS3(t *testing.T) {
 	err = r.Upload(ctx, toUpload, func(remote.Event) {})
 	ok(t, err, "Upload")
 
-	r2, err := remote.Open(ctx, url)
+	r2, err := remote.Open(ctx, url, false)
 	ok(t, err, "Open")
 	defer r2.Close()
 

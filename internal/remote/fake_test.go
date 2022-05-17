@@ -9,13 +9,24 @@ import (
 	"github.com/paulhammond/sup/internal/remote"
 )
 
+func TestFakeDisallowed(t *testing.T) {
+	ctx := context.Background()
+	r, err := remote.Open(ctx, "tmp.db", false)
+	if r != nil {
+		t.Errorf("Unexpected remote\ngot %v\nexp nil", r)
+	}
+	if err == nil || err.Error() != "Unknown remote: tmp.db" {
+		t.Errorf("Unexpected error\ngot %s", err)
+	}
+}
+
 func TestFake(t *testing.T) {
 	ctx := context.Background()
 
 	dir := t.TempDir()
 	err := remote.CreateFake(dir + "/tmp.db")
 	ok(t, err, "CreateFake")
-	r, err := remote.Open(ctx, dir+"/tmp.db")
+	r, err := remote.Open(ctx, dir+"/tmp.db", true)
 	ok(t, err, "Open")
 	defer r.Close()
 

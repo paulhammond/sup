@@ -33,6 +33,9 @@ func TestIntegration(t *testing.T) {
 				if err != nil {
 					ts.Fatalf("fakeinit error %s", err)
 				}
+
+				ts.Setenv("SUP_DEBUG_FAKE_REMOTE", "1")
+
 			},
 		},
 
